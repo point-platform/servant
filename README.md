@@ -31,7 +31,9 @@ Types may have one of two lifestyles:
 - `Singleton` instances are created only once
 - `Transient` instances are created per request
 
-## Installation
+---
+
+# Installation
 
 NuGet makes using the library easy:
 
