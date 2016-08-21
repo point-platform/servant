@@ -200,7 +200,7 @@ namespace Servant
 
             TypeEntry entry;
             if (!_nodeByType.TryGetValue(typeof(T), out entry))
-                throw new ServantException($"Type {typeof(T)} not supported.");
+                throw new ServantException($"Type \"{typeof(T)}\" is not registered.");
 
             return TaskUtil.Upcast<T>(entry.Provider.GetAsync());
         }
