@@ -65,12 +65,14 @@ namespace Servant
 
         private readonly Func<object[], Task<object>> _factory;
         private readonly Lifestyle _lifestyle;
+        private readonly Type _declaredType;
 
         [CanBeNull] private object _singletonInstance;
 
-        public TypeProvider(Func<object[], Task<object>> factory, Lifestyle lifestyle, IReadOnlyList<TypeEntry> dependencies)
+        public TypeProvider(Func<object[], Task<object>> factory, Type declaredType, Lifestyle lifestyle, IReadOnlyList<TypeEntry> dependencies)
         {
             _factory = factory;
+            _declaredType = declaredType;
             _lifestyle = lifestyle;
             Dependencies = dependencies;
         }
@@ -95,8 +97,11 @@ namespace Servant
 
             var instance = await _factory.Invoke(argumentTasks.Select(t => t.Result).ToArray());
 
-            // TODO validate not null
-            // TODO validate is declared type
+            if (instance == null)
+                throw new ServantException($"Instance for type \"{_declaredType}\" cannot be null.");
+
+            if (!_declaredType.IsInstanceOfType(instance))
+                throw new ServantException($"Instance produced for type \"{_declaredType}\" is not an instance of that type.");
 
             if (_lifestyle == Lifestyle.Singleton)
                 _singletonInstance = instance;
@@ -151,7 +156,7 @@ namespace Servant
             if (typeEntry.Provider != null)
                 throw new ServantException($"Type \"{declaredType}\" already registered.");
 
-            typeEntry.Provider = new TypeProvider(factory, lifestyle, parameterTypes.Select(GetOrAddTypeEntry).ToList());
+            typeEntry.Provider = new TypeProvider(factory, declaredType, lifestyle, parameterTypes.Select(GetOrAddTypeEntry).ToList());
         }
 
         private static bool DependsUpon(TypeEntry dependant, Type dependent)

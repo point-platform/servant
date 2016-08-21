@@ -22,14 +22,19 @@
 //
 #endregion
 
+using System;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace Servant
 {
     internal static class TaskUtil
     {
-        public static Task<object> Downcast<T>(Task<T> task)
+        public static Task<object> Downcast<T>([NotNull] Task<T> task)
         {
+            if (task == null)
+                throw new ArgumentNullException(nameof(task));
+
             var tcs = new TaskCompletionSource<object>();
 
             task.ContinueWith(
@@ -47,8 +52,11 @@ namespace Servant
             return tcs.Task;
         }
 
-        public static Task<T> Upcast<T>(Task<object> task)
+        public static Task<T> Upcast<T>([NotNull] Task<object> task)
         {
+            if (task == null)
+                throw new ArgumentNullException(nameof(task));
+
             var tcs = new TaskCompletionSource<T>();
 
             task.ContinueWith(

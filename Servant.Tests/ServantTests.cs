@@ -22,6 +22,7 @@
 //
 #endregion
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
@@ -261,6 +262,38 @@ namespace Servant.Tests
             Assert.Equal(
                 $"Type \"{typeof(Test1)}\" is not registered.",
                 exception.Message);
+        }
+
+        [Fact]
+        public async Task AddSingleton_NullInstanceThrows()
+        {
+            var servant = new Servant();
+
+            // ReSharper disable once AssignNullToNotNullAttribute
+            Assert.Throws<ArgumentNullException>(() => servant.AddSingleton((Test1)null));
+        }
+
+        [Fact]
+        public async Task Add_FuncReturningNullTaskThrows()
+        {
+            var servant = new Servant();
+
+            servant.AddSingleton(() => (Task<Test1>)null);
+
+            await Assert.ThrowsAsync<ArgumentNullException>(
+                () => servant.ServeAsync<Test1>());
+        }
+
+        [Fact]
+        public async Task Add_FuncReturningNullInstanceThrows()
+        {
+            var servant = new Servant();
+
+            servant.AddSingleton(() => (Test1)null);
+
+            var exception = await Assert.ThrowsAsync<ServantException>(() => servant.ServeAsync<Test1>());
+
+            Assert.Equal($"Instance for type \"{typeof(Test1)}\" cannot be null.", exception.Message);
         }
 
         #region Differing instance/declared types

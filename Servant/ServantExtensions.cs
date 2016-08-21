@@ -42,8 +42,11 @@ namespace Servant
         /// <typeparam name="TInstance">The declared type of the instance being added.</typeparam>
         /// <param name="servant">The instance of <see cref="Servant"/> to add the singleton instance to.</param>
         /// <param name="instance">The singleton instance to add for type <typeparamref name="TInstance"/>.</param>
-        public static void AddSingleton<TInstance>(this Servant servant, TInstance instance)
+        public static void AddSingleton<TInstance>(this Servant servant, [NotNull] TInstance instance)
         {
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
+
             servant.Add(
                 Lifestyle.Singleton,
                 typeof(TInstance),
