@@ -188,7 +188,7 @@ namespace Servant.Tests
                 () => servant.AddSingleton<Test1, Test1, Test2>((a, b) => (Test2)null));
 
             Assert.Equal(
-                "Type \"Servant.Tests.Test2\" has multiple dependencies upon type \"Servant.Tests.Test1\", which is disallowed.",
+                $"Type \"{typeof(Test2)}\" has multiple dependencies upon type \"{typeof(Test1)}\", which is disallowed.",
                 exception.Message);
         }
 
@@ -201,7 +201,7 @@ namespace Servant.Tests
                 () => servant.AddSingleton<Test1, Test1>(a => (Test1)null));
 
             Assert.Equal(
-                "Type \"Servant.Tests.Test1\" depends upon its own type, which is disallowed.",
+                $"Type \"{typeof(Test1)}\" depends upon its own type, which is disallowed.",
                 exception.Message);
         }
 
@@ -216,7 +216,7 @@ namespace Servant.Tests
                 () => servant.AddSingleton<Test1>());
 
             Assert.Equal(
-                "Type \"Servant.Tests.Test1\" already registered.",
+                $"Type \"{typeof(Test1)}\" already registered.",
                 exception.Message);
         }
 
@@ -252,7 +252,7 @@ namespace Servant.Tests
                 () => servant.AddSingleton((Cycle1 c) => new Cycle3(c)));
 
             Assert.Equal(
-                "Type \"Servant.Tests.ServantTests+Cycle3\" cannot depend upon type \"Servant.Tests.ServantTests+Cycle1\" as this would create circular dependencies.",
+                $"Type \"{typeof(Cycle3)}\" cannot depend upon type \"{typeof(Cycle1)}\" as this would create circular dependencies.",
                 exception.Message);
         }
 
