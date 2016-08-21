@@ -29,8 +29,18 @@ using System.Threading.Tasks;
 
 namespace Servant
 {
+    /// <summary>
+    /// Extension methods for working with instances of <see cref="Servant"/>.
+    /// </summary>
     public static partial class ServantExtensions
     {
+        /// <summary>
+        /// Adds an existing instance of type <typeparamref name="TInstance"/> as a singleton.
+        /// </summary>
+        /// <remarks>There is no <see cref="Lifestyle.Transient"/> equivalent of this method.</remarks>
+        /// <typeparam name="TInstance">The declared type of the instance being added.</typeparam>
+        /// <param name="servant">The instance of <see cref="Servant"/> to add the singleton instance to.</param>
+        /// <param name="instance">The singleton instance to add for type <typeparamref name="TInstance"/>.</param>
         public static void AddSingleton<TInstance>(this Servant servant, TInstance instance)
         {
             servant.Add(

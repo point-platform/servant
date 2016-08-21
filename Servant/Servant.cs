@@ -31,8 +31,9 @@ using JetBrains.Annotations;
 
 namespace Servant
 {
-    // Async .NET dependency injection, while you await!
-
+    /// <summary>
+    /// Specifies how instances are reused between dependants.
+    /// </summary>
     public enum Lifestyle
     {
         /// <summary>
@@ -104,6 +105,9 @@ namespace Servant
 
     // TODO make disposable, disposing all singletons (what about transients?)
 
+    /// <summary>
+    /// Serves instances of specific types, resolving dependencies as required, and running any async initialisation.
+    /// </summary>
     public sealed class Servant
     {
         private readonly ConcurrentDictionary<Type, TypeEntry> _nodeByType = new ConcurrentDictionary<Type, TypeEntry>();
@@ -112,6 +116,13 @@ namespace Servant
 
         private TypeEntry GetOrAddTypeNode(Type declaredType) => _nodeByType.GetOrAdd(declaredType, t => new TypeEntry(t));
 
+        /// <summary>
+        /// Adds the means of obtaining an instance of type <paramref name="declaredType"/>.
+        /// </summary>
+        /// <param name="lifestyle">Specifies how instances are reused between dependants.</param>
+        /// <param name="declaredType">The <see cref="Type"/> via which instances must be requested.</param>
+        /// <param name="factory">A function that returns an instance of <paramref name="declaredType"/> given a set of dependencies.</param>
+        /// <param name="parameterTypes">The types of dependencies required by <paramref name="factory"/>.</param>
         public void Add(Lifestyle lifestyle, Type declaredType, Func<object[], Task<object>> factory, Type[] parameterTypes)
         {
             // TODO validate no duplicate parameter types
@@ -135,6 +146,11 @@ namespace Servant
             _validationRequired = false;
         }
 
+        /// <summary>
+        /// Eagerly initialises all types registered as having <see cref="Lifestyle.Singleton"/> lifestyle.
+        /// </summary>
+        /// <remarks>If all singletons are already instantiated, calling this method has no effect.</remarks>
+        /// <returns></returns>
         public Task CreateSingletonsAsync()
         {
             Validate();
@@ -142,6 +158,11 @@ namespace Servant
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Serves an instance of type <typeparamref name="T"/>, performing any requires async initialisation.
+        /// </summary>
+        /// <typeparam name="T">The type to be served.</typeparam>
+        /// <returns>A task that completes when the instance is ready.</returns>
         public Task<T> ServeAsync<T>()
         {
             Validate();
