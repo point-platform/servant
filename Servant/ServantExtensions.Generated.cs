@@ -35,6 +35,16 @@ namespace Servant
 		#region AddTransient
 
 		[ExcludeFromCodeCoverage]
+        public static void AddTransient<TInstance>(this Servant servant, Func<TInstance> func)
+        {
+            servant.Add(
+			    Lifestyle.Transient,
+				typeof(TInstance),
+				args => Task.FromResult((object)func()),
+				Type.EmptyTypes);
+        }
+
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<TInstance>(this Servant servant, Func<Task<TInstance>> func)
         {
             servant.Add(
@@ -368,6 +378,16 @@ namespace Servant
 		#endregion
 
 		#region AddSingleton
+
+		[ExcludeFromCodeCoverage]
+        public static void AddSingleton<TInstance>(this Servant servant, Func<TInstance> func)
+        {
+            servant.Add(
+			    Lifestyle.Singleton,
+				typeof(TInstance),
+				args => Task.FromResult((object)func()),
+				Type.EmptyTypes);
+        }
 
 		[ExcludeFromCodeCoverage]
         public static void AddSingleton<TInstance>(this Servant servant, Func<Task<TInstance>> func)
