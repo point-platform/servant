@@ -126,8 +126,10 @@ namespace Servant
         public void Add(Lifestyle lifestyle, Type declaredType, Func<object[], Task<object>> factory, Type[] parameterTypes)
         {
             // TODO validate no duplicate parameter types
-            // TODO validate declared type not present in parameter list
             // TODO if creation fails somehow, might need to delete the node (or do work in lambda passed to GetOrAdd so throw prohibits add
+            // Validate the type doesn't depend upon itself
+            if (parameterTypes.Contains(declaredType))
+                throw new ServantException($"Type \"{declaredType}\" depends upon its own type, which is disallowed.");
             var typeNode = GetOrAddTypeNode(declaredType);
 
             if (typeNode.Provider != null)

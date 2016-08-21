@@ -22,6 +22,7 @@
 //
 #endregion
 
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -177,6 +178,19 @@ namespace Servant.Tests
             var test2 = await servant.ServeAsync<Test2>();
             Assert.IsType<Test2>(test2);
             Assert.IsType<Test1>(test2.Test1);
+        }
+
+        [Fact]
+        public async Task Add_DependsUponDeclaredType()
+        {
+            var servant = new Servant();
+
+            var exception = Assert.Throws<ServantException>(
+                () => servant.AddSingleton<Test1, Test1>(a => (Test1)null));
+
+            Assert.Equal(
+                "Type \"Servant.Tests.Test1\" depends upon its own type, which is disallowed.",
+                exception.Message);
         }
     }
 }
