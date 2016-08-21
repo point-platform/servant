@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Servant", "Servant\Servant.csproj", "{15F44CD4-3B1F-46B7-8AAF-352E9BFADF86}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Servant.Tests", "Servant.Tests\Servant.Tests.csproj", "{2653B653-7788-43BC-8A16-4382F0143C51}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BDB4A3DA-FDAD-4E07-95A4-5F4E9DE73A7A}"
 	ProjectSection(SolutionItems) = preProject
 		.gitattributes = .gitattributes
@@ -21,6 +23,10 @@ Global
 		{15F44CD4-3B1F-46B7-8AAF-352E9BFADF86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15F44CD4-3B1F-46B7-8AAF-352E9BFADF86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{15F44CD4-3B1F-46B7-8AAF-352E9BFADF86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2653B653-7788-43BC-8A16-4382F0143C51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2653B653-7788-43BC-8A16-4382F0143C51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2653B653-7788-43BC-8A16-4382F0143C51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2653B653-7788-43BC-8A16-4382F0143C51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

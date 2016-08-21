@@ -1,0 +1,78 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+using System;
+using System.Threading.Tasks;
+
+namespace Servant
+{
+    // NOTE this file is generated
+
+    public static partial class ServantExtensions
+    {
+		#region AddTransient
+
+        public static void AddTransient<TInstance>(this Servant servant, Func<Task<TInstance>> func)
+        {
+            servant.Add(
+			    Lifestyle.Transient,
+				typeof(TInstance),
+				args => TaskUtil.Downcast(func()),
+				Type.EmptyTypes);
+        }
+
+<#
+for (var count = 1; count <= 16; count++)
+{
+    var typeNames  = string.Join(", ", Enumerable.Range(1, count).Select(n => $"T{n}"));
+    var typeValues = string.Join(", ", Enumerable.Range(1, count).Select(n => $"typeof(T{n})"));
+    var args       = string.Join(", ", Enumerable.Range(1, count).Select(n => $"(T{n})args[{n-1}]"));
+#>
+        public static void AddTransient<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, Task<TInstance>> func)
+        {
+            servant.Add(
+			    Lifestyle.Transient,
+				typeof(TInstance),
+				args => TaskUtil.Downcast(func(<#= args #>)),
+				new[] {<#= typeValues #>});
+        }
+
+<# } #>
+
+		#endregion
+
+		#region AddSingleton
+
+        public static void AddSingleton<TInstance>(this Servant servant, Func<Task<TInstance>> func)
+        {
+            servant.Add(
+			    Lifestyle.Singleton,
+				typeof(TInstance),
+				args => TaskUtil.Downcast(func()),
+				Type.EmptyTypes);
+        }
+
+<#
+for (var count = 1; count <= 16; count++)
+{
+    var typeNames  = string.Join(", ", Enumerable.Range(1, count).Select(n => $"T{n}"));
+    var typeValues = string.Join(", ", Enumerable.Range(1, count).Select(n => $"typeof(T{n})"));
+    var args       = string.Join(", ", Enumerable.Range(1, count).Select(n => $"(T{n})args[{n-1}]"));
+#>
+        public static void AddSingleton<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, Task<TInstance>> func)
+        {
+            servant.Add(
+			    Lifestyle.Singleton,
+				typeof(TInstance),
+				args => TaskUtil.Downcast(func(<#= args #>)),
+				new[] {<#= typeValues #>});
+        }
+
+<# } #>
+
+		#endregion
+    }
+}
