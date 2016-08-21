@@ -257,5 +257,31 @@ namespace Servant.Tests
         }
 
         #endregion
+
+        #region Add type with multiple constructors
+
+		[ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "UnusedMember.Local")]
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
+        private class MultiCtor
+        {
+            private MultiCtor() { }
+            private MultiCtor(IBase b) { }
+        }
+
+        [Fact]
+        public async Task Add_MultipleConstructors()
+        {
+            var servant = new Servant();
+
+            var exception = Assert.Throws<ServantException>(
+                () => servant.AddSingleton<MultiCtor>());
+
+            Assert.Equal(
+                $"Type \"{typeof(MultiCtor)}\" must have a single constructor to use implicit construction. Either ensure a single constructor exists, or register the type with a Func<> instead.",
+                exception.Message);
+        }
+
+        #endregion
     }
 }

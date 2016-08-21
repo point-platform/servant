@@ -108,7 +108,7 @@ namespace Servant
             var constructors = type.GetConstructors();
 
             if (constructors.Length != 1)
-                throw new Exception($"Type {type} must have a single constructor.");
+                throw new ServantException($"Type \"{type}\" must have a single constructor to use implicit construction. Either ensure a single constructor exists, or register the type with a Func<> instead.");
 
             // TODO validate all types involved are reference types (?) or support boxing value types
             // TODO validate nothing fancy about the parameters
