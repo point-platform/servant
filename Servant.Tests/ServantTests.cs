@@ -300,6 +300,7 @@ namespace Servant.Tests
 
         private interface IBase { }
 
+        [ExcludeFromCodeCoverage]
         private class Impl : IBase { }
 
         [Fact]

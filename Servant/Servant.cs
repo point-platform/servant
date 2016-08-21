@@ -204,6 +204,7 @@ namespace Servant
     /// <summary>
     /// An exception raised by Servant.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public sealed class ServantException : Exception
     {
         /// <inheritdoc />
