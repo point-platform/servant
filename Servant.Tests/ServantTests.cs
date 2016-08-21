@@ -205,5 +205,20 @@ namespace Servant.Tests
                 "Type \"Servant.Tests.Test1\" depends upon its own type, which is disallowed.",
                 exception.Message);
         }
+
+        [Fact]
+        public async Task Add_TypeAlreadyRegistered()
+        {
+            var servant = new Servant();
+
+            servant.AddSingleton<Test1>();
+
+            var exception = Assert.Throws<ServantException>(
+                () => servant.AddSingleton<Test1>());
+
+            Assert.Equal(
+                "Type \"Servant.Tests.Test1\" already registered.",
+                exception.Message);
+        }
     }
 }
