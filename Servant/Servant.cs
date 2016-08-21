@@ -125,11 +125,16 @@ namespace Servant
         /// <param name="parameterTypes">The types of dependencies required by <paramref name="factory"/>.</param>
         public void Add(Lifestyle lifestyle, Type declaredType, Func<object[], Task<object>> factory, Type[] parameterTypes)
         {
-            // TODO validate no duplicate parameter types
             // TODO if creation fails somehow, might need to delete the node (or do work in lambda passed to GetOrAdd so throw prohibits add
             // Validate the type doesn't depend upon itself
             if (parameterTypes.Contains(declaredType))
                 throw new ServantException($"Type \"{declaredType}\" depends upon its own type, which is disallowed.");
+
+            // Validate no duplicate parameter types
+            var dupes = parameterTypes.GroupBy(t => t).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
+            if (dupes.Count != 0)
+                throw new ServantException($"Type \"{declaredType}\" has multiple dependencies upon type{(dupes.Count == 1 ? "" : "s")} {string.Join(", ", dupes.Select(t => $"\"{t}\""))}, which is disallowed.");
+
             var typeNode = GetOrAddTypeNode(declaredType);
 
             if (typeNode.Provider != null)

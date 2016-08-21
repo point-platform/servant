@@ -181,6 +181,19 @@ namespace Servant.Tests
         }
 
         [Fact]
+        public async Task Add_DuplicateDependencyTypesDisallowed()
+        {
+            var servant = new Servant();
+
+            var exception = Assert.Throws<ServantException>(
+                () => servant.AddSingleton<Test1, Test1, Test2>((a, b) => (Test2)null));
+
+            Assert.Equal(
+                "Type \"Servant.Tests.Test2\" has multiple dependencies upon type \"Servant.Tests.Test1\", which is disallowed.",
+                exception.Message);
+        }
+
+        [Fact]
         public async Task Add_DependsUponDeclaredType()
         {
             var servant = new Servant();
