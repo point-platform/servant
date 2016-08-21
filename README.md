@@ -2,6 +2,7 @@
 
 Async .NET dependency injection, while you await!
 
+[![Build status](https://ci.appveyor.com/api/projects/status/ft0hgxx2tsn927gu?svg=true)](https://ci.appveyor.com/project/drewnoakes/servant)
 > **/səːv(ə)nt/**  
 > _noun_  
 > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;One who waits on another
