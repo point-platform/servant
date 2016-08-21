@@ -61,7 +61,6 @@ namespace Servant
 
     internal sealed class TypeProvider
     {
-        public Type DeclaredType { get; }
         public Lifestyle Lifestyle { get; }
         public IReadOnlyList<TypeEntry> Dependencies { get; }
 
@@ -69,10 +68,9 @@ namespace Servant
 
         [CanBeNull] private object _singletonInstance;
 
-        public TypeProvider(Func<object[], Task<object>> factory, Type declaredType, Lifestyle lifestyle, IReadOnlyList<TypeEntry> dependencies)
+        public TypeProvider(Func<object[], Task<object>> factory, Lifestyle lifestyle, IReadOnlyList<TypeEntry> dependencies)
         {
             _factory = factory;
-            DeclaredType = declaredType;
             Lifestyle = lifestyle;
             Dependencies = dependencies;
         }
@@ -151,7 +149,7 @@ namespace Servant
             if (typeNode.Provider != null)
                 throw new ServantException($"Type \"{declaredType}\" already registered.");
 
-            typeNode.Provider = new TypeProvider(factory, declaredType, lifestyle, parameterTypes.Select(GetOrAddTypeNode).ToList());
+            typeNode.Provider = new TypeProvider(factory, lifestyle, parameterTypes.Select(GetOrAddTypeNode).ToList());
         }
 
         private static bool DependsUpon(TypeEntry dependant, Type dependent)
