@@ -30,6 +30,7 @@
 
 using System;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Servant
 {
@@ -39,6 +40,7 @@ namespace Servant
     {
 		#region AddTransient
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<TInstance>(this Servant servant, Func<Task<TInstance>> func)
         {
             servant.Add(
@@ -55,6 +57,7 @@ for (var count = 1; count <= 16; count++)
     var typeValues = string.Join(", ", Enumerable.Range(1, count).Select(n => $"typeof(T{n})"));
     var args       = string.Join(", ", Enumerable.Range(1, count).Select(n => $"(T{n})args[{n-1}]"));
 #>
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, TInstance> func)
         {
             servant.Add(
@@ -64,6 +67,7 @@ for (var count = 1; count <= 16; count++)
 				new[] {<#= typeValues #>});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, Task<TInstance>> func)
         {
             servant.Add(
@@ -79,6 +83,7 @@ for (var count = 1; count <= 16; count++)
 
 		#region AddSingleton
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<TInstance>(this Servant servant, Func<Task<TInstance>> func)
         {
             servant.Add(
@@ -95,6 +100,7 @@ for (var count = 1; count <= 16; count++)
     var typeValues = string.Join(", ", Enumerable.Range(1, count).Select(n => $"typeof(T{n})"));
     var args       = string.Join(", ", Enumerable.Range(1, count).Select(n => $"(T{n})args[{n-1}]"));
 #>
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, TInstance> func)
         {
             servant.Add(
@@ -104,6 +110,7 @@ for (var count = 1; count <= 16; count++)
 				new[] {<#= typeValues #>});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, Task<TInstance>> func)
         {
             servant.Add(

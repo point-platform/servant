@@ -22,6 +22,7 @@
 //
 #endregion
 
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -37,8 +38,10 @@ namespace Servant.Tests
     // TODO test factories throwing
     // TODO get with timeout
 
+    [ExcludeFromCodeCoverage]
     public class Test1 { }
 
+	[ExcludeFromCodeCoverage]
     public class Test2
     {
         public Test1 Test1 { get; }
@@ -221,16 +224,19 @@ namespace Servant.Tests
 
         #region Cycles
 
+		[ExcludeFromCodeCoverage]
         private class Cycle1
         {
             public Cycle1(Cycle2 c) { }
         }
 
+		[ExcludeFromCodeCoverage]
         private class Cycle2
         {
             public Cycle2(Cycle3 c) { }
         }
 
+		[ExcludeFromCodeCoverage]
         private class Cycle3
         {
             public Cycle3(Cycle1 c) { }

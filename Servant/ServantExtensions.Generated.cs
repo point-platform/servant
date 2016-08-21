@@ -24,6 +24,7 @@
 
 using System;
 using System.Threading.Tasks;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Servant
 {
@@ -33,6 +34,7 @@ namespace Servant
     {
 		#region AddTransient
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<TInstance>(this Servant servant, Func<Task<TInstance>> func)
         {
             servant.Add(
@@ -42,6 +44,7 @@ namespace Servant
 				Type.EmptyTypes);
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, TInstance>(this Servant servant, Func<T1, TInstance> func)
         {
             servant.Add(
@@ -51,6 +54,7 @@ namespace Servant
 				new[] {typeof(T1)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, TInstance>(this Servant servant, Func<T1, Task<TInstance>> func)
         {
             servant.Add(
@@ -60,6 +64,7 @@ namespace Servant
 				new[] {typeof(T1)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, TInstance>(this Servant servant, Func<T1, T2, TInstance> func)
         {
             servant.Add(
@@ -69,6 +74,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, TInstance>(this Servant servant, Func<T1, T2, Task<TInstance>> func)
         {
             servant.Add(
@@ -78,6 +84,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, TInstance>(this Servant servant, Func<T1, T2, T3, TInstance> func)
         {
             servant.Add(
@@ -87,6 +94,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, TInstance>(this Servant servant, Func<T1, T2, T3, Task<TInstance>> func)
         {
             servant.Add(
@@ -96,6 +104,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, TInstance>(this Servant servant, Func<T1, T2, T3, T4, TInstance> func)
         {
             servant.Add(
@@ -105,6 +114,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, TInstance>(this Servant servant, Func<T1, T2, T3, T4, Task<TInstance>> func)
         {
             servant.Add(
@@ -114,6 +124,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, TInstance> func)
         {
             servant.Add(
@@ -123,6 +134,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, Task<TInstance>> func)
         {
             servant.Add(
@@ -132,6 +144,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, TInstance> func)
         {
             servant.Add(
@@ -141,6 +154,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, Task<TInstance>> func)
         {
             servant.Add(
@@ -150,6 +164,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, TInstance> func)
         {
             servant.Add(
@@ -159,6 +174,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, Task<TInstance>> func)
         {
             servant.Add(
@@ -168,6 +184,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, TInstance> func)
         {
             servant.Add(
@@ -177,6 +194,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, Task<TInstance>> func)
         {
             servant.Add(
@@ -186,6 +204,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, T9, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TInstance> func)
         {
             servant.Add(
@@ -195,6 +214,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, T9, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, Task<TInstance>> func)
         {
             servant.Add(
@@ -204,6 +224,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TInstance> func)
         {
             servant.Add(
@@ -213,6 +234,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Task<TInstance>> func)
         {
             servant.Add(
@@ -222,6 +244,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TInstance> func)
         {
             servant.Add(
@@ -231,6 +254,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Task<TInstance>> func)
         {
             servant.Add(
@@ -240,6 +264,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TInstance> func)
         {
             servant.Add(
@@ -249,6 +274,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Task<TInstance>> func)
         {
             servant.Add(
@@ -258,6 +284,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TInstance> func)
         {
             servant.Add(
@@ -267,6 +294,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Task<TInstance>> func)
         {
             servant.Add(
@@ -276,6 +304,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TInstance> func)
         {
             servant.Add(
@@ -285,6 +314,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Task<TInstance>> func)
         {
             servant.Add(
@@ -294,6 +324,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TInstance> func)
         {
             servant.Add(
@@ -303,6 +334,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Task<TInstance>> func)
         {
             servant.Add(
@@ -312,6 +344,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TInstance> func)
         {
             servant.Add(
@@ -321,6 +354,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof(T16)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddTransient<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Task<TInstance>> func)
         {
             servant.Add(
@@ -335,6 +369,7 @@ namespace Servant
 
 		#region AddSingleton
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<TInstance>(this Servant servant, Func<Task<TInstance>> func)
         {
             servant.Add(
@@ -344,6 +379,7 @@ namespace Servant
 				Type.EmptyTypes);
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, TInstance>(this Servant servant, Func<T1, TInstance> func)
         {
             servant.Add(
@@ -353,6 +389,7 @@ namespace Servant
 				new[] {typeof(T1)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, TInstance>(this Servant servant, Func<T1, Task<TInstance>> func)
         {
             servant.Add(
@@ -362,6 +399,7 @@ namespace Servant
 				new[] {typeof(T1)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, TInstance>(this Servant servant, Func<T1, T2, TInstance> func)
         {
             servant.Add(
@@ -371,6 +409,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, TInstance>(this Servant servant, Func<T1, T2, Task<TInstance>> func)
         {
             servant.Add(
@@ -380,6 +419,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, TInstance>(this Servant servant, Func<T1, T2, T3, TInstance> func)
         {
             servant.Add(
@@ -389,6 +429,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, TInstance>(this Servant servant, Func<T1, T2, T3, Task<TInstance>> func)
         {
             servant.Add(
@@ -398,6 +439,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, TInstance>(this Servant servant, Func<T1, T2, T3, T4, TInstance> func)
         {
             servant.Add(
@@ -407,6 +449,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, TInstance>(this Servant servant, Func<T1, T2, T3, T4, Task<TInstance>> func)
         {
             servant.Add(
@@ -416,6 +459,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, TInstance> func)
         {
             servant.Add(
@@ -425,6 +469,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, Task<TInstance>> func)
         {
             servant.Add(
@@ -434,6 +479,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, TInstance> func)
         {
             servant.Add(
@@ -443,6 +489,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, Task<TInstance>> func)
         {
             servant.Add(
@@ -452,6 +499,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, TInstance> func)
         {
             servant.Add(
@@ -461,6 +509,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, Task<TInstance>> func)
         {
             servant.Add(
@@ -470,6 +519,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, TInstance> func)
         {
             servant.Add(
@@ -479,6 +529,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, Task<TInstance>> func)
         {
             servant.Add(
@@ -488,6 +539,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, T9, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, TInstance> func)
         {
             servant.Add(
@@ -497,6 +549,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, T9, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, Task<TInstance>> func)
         {
             servant.Add(
@@ -506,6 +559,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TInstance> func)
         {
             servant.Add(
@@ -515,6 +569,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, Task<TInstance>> func)
         {
             servant.Add(
@@ -524,6 +579,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TInstance> func)
         {
             servant.Add(
@@ -533,6 +589,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, Task<TInstance>> func)
         {
             servant.Add(
@@ -542,6 +599,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TInstance> func)
         {
             servant.Add(
@@ -551,6 +609,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, Task<TInstance>> func)
         {
             servant.Add(
@@ -560,6 +619,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TInstance> func)
         {
             servant.Add(
@@ -569,6 +629,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, Task<TInstance>> func)
         {
             servant.Add(
@@ -578,6 +639,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TInstance> func)
         {
             servant.Add(
@@ -587,6 +649,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, Task<TInstance>> func)
         {
             servant.Add(
@@ -596,6 +659,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TInstance> func)
         {
             servant.Add(
@@ -605,6 +669,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, Task<TInstance>> func)
         {
             servant.Add(
@@ -614,6 +679,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TInstance> func)
         {
             servant.Add(
@@ -623,6 +689,7 @@ namespace Servant
 				new[] {typeof(T1), typeof(T2), typeof(T3), typeof(T4), typeof(T5), typeof(T6), typeof(T7), typeof(T8), typeof(T9), typeof(T10), typeof(T11), typeof(T12), typeof(T13), typeof(T14), typeof(T15), typeof(T16)});
         }
 
+		[ExcludeFromCodeCoverage]
         public static void AddSingleton<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TInstance>(this Servant servant, Func<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, Task<TInstance>> func)
         {
             servant.Add(
