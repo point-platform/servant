@@ -222,19 +222,22 @@ namespace Servant.Tests
 
         #region Cycles
 
-		[ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private class Cycle1
         {
             public Cycle1(Cycle2 c) { }
         }
 
 		[ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private class Cycle2
         {
             public Cycle2(Cycle3 c) { }
         }
 
 		[ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private class Cycle3
         {
             public Cycle3(Cycle1 c) { }
