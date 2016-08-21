@@ -61,17 +61,17 @@ namespace Servant
 
     internal sealed class TypeProvider
     {
-        private Lifestyle Lifestyle { get; }
         public IReadOnlyList<TypeEntry> Dependencies { get; }
 
         private readonly Func<object[], Task<object>> _factory;
+        private readonly Lifestyle _lifestyle;
 
         [CanBeNull] private object _singletonInstance;
 
         public TypeProvider(Func<object[], Task<object>> factory, Lifestyle lifestyle, IReadOnlyList<TypeEntry> dependencies)
         {
             _factory = factory;
-            Lifestyle = lifestyle;
+            _lifestyle = lifestyle;
             Dependencies = dependencies;
         }
 
@@ -79,7 +79,7 @@ namespace Servant
         {
             // TODO make concurrency-safe here to avoid double-allocation of singleton
 
-            if (Lifestyle == Lifestyle.Singleton && _singletonInstance != null)
+            if (_lifestyle == Lifestyle.Singleton && _singletonInstance != null)
                 return _singletonInstance;
 
             // find arguments
@@ -98,7 +98,7 @@ namespace Servant
             // TODO validate not null
             // TODO validate is declared type
 
-            if (Lifestyle == Lifestyle.Singleton)
+            if (_lifestyle == Lifestyle.Singleton)
                 _singletonInstance = instance;
 
             return instance;
