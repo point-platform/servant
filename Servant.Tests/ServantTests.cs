@@ -296,6 +296,29 @@ namespace Servant.Tests
             Assert.Equal($"Instance for type \"{typeof(Test1)}\" cannot be null.", exception.Message);
         }
 
+        [Fact]
+        public async Task CreateSingletonsAsync()
+        {
+            var servant = new Servant();
+
+            var callCount = 0;
+            servant.AddSingleton(() =>
+            {
+                callCount++;
+                return new Test1();
+            });
+
+            Assert.Equal(0, callCount);
+
+            await servant.CreateSingletonsAsync();
+
+            Assert.Equal(1, callCount);
+
+            await servant.ServeAsync<Test1>();
+
+            Assert.Equal(1, callCount);
+        }
+
         #region Differing instance/declared types
 
         private interface IBase { }

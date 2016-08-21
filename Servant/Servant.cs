@@ -25,6 +25,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -61,10 +62,10 @@ namespace Servant
 
     internal sealed class TypeProvider
     {
+        public Lifestyle Lifestyle { get; }
         public IReadOnlyList<TypeEntry> Dependencies { get; }
 
         private readonly Func<object[], Task<object>> _factory;
-        private readonly Lifestyle _lifestyle;
         private readonly Type _declaredType;
 
         [CanBeNull] private object _singletonInstance;
@@ -73,7 +74,7 @@ namespace Servant
         {
             _factory = factory;
             _declaredType = declaredType;
-            _lifestyle = lifestyle;
+            Lifestyle = lifestyle;
             Dependencies = dependencies;
         }
 
@@ -81,7 +82,7 @@ namespace Servant
         {
             // TODO make concurrency-safe here to avoid double-allocation of singleton
 
-            if (_lifestyle == Lifestyle.Singleton && _singletonInstance != null)
+            if (Lifestyle == Lifestyle.Singleton && _singletonInstance != null)
                 return _singletonInstance;
 
             // find arguments
@@ -103,7 +104,7 @@ namespace Servant
             if (!_declaredType.IsInstanceOfType(instance))
                 throw new ServantException($"Instance produced for type \"{_declaredType}\" is not an instance of that type.");
 
-            if (_lifestyle == Lifestyle.Singleton)
+            if (Lifestyle == Lifestyle.Singleton)
                 _singletonInstance = instance;
 
             return instance;
@@ -179,11 +180,19 @@ namespace Servant
         /// <summary>
         /// Eagerly initialises all types registered as having <see cref="Lifestyle.Singleton"/> lifestyle.
         /// </summary>
-        /// <remarks>If all singletons are already instantiated, calling this method has no effect.</remarks>
-        /// <returns></returns>
+        /// <remarks>
+        /// Calling this method is optional. If not used, singletons will be initialised lazily, when first requested.
+        /// <para />
+        /// If all singletons are already instantiated, calling this method has no effect.
+        /// </remarks>
+        /// <returns>A task that completes when singleton initialisation has finished.</returns>
         public Task CreateSingletonsAsync()
         {
-            throw new NotImplementedException();
+            return Task.WhenAll(
+                from typeEntry in _entryByType.Values
+                let provider = typeEntry.Provider
+                where provider?.Lifestyle == Lifestyle.Singleton
+                select provider.GetAsync());
         }
 
         /// <summary>
