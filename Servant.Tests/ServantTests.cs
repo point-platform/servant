@@ -411,5 +411,83 @@ namespace Servant.Tests
         }
 
         #endregion
+
+        #region Disposal
+
+        [ExcludeFromCodeCoverage]
+        private class Disposable : IDisposable
+        {
+            public int DisposeCount { get; private set; }
+
+            public void Dispose()
+            {
+                DisposeCount++;
+            }
+        }
+
+        [Fact]
+        public async Task Dispose_DisposesSingletons()
+        {
+            var servant = new Servant();
+
+            var singleton = new Disposable();
+            servant.AddSingleton(singleton);
+
+            await servant.CreateSingletonsAsync();
+
+            Assert.Equal(0, singleton.DisposeCount);
+
+            servant.Dispose();
+
+            Assert.Equal(1, singleton.DisposeCount);
+        }
+
+        [Fact]
+        public async Task Add_AfterDisposeThrows()
+        {
+            var servant = new Servant();
+
+            servant.Dispose();
+
+            var exception = Assert.Throws<ObjectDisposedException>(() => servant.AddSingleton(new Disposable()));
+
+            Assert.Equal(nameof(Servant), exception.ObjectName);
+        }
+
+        [Fact]
+        public async Task CreateSingletonsAsync_AfterDisposeThrows()
+        {
+            var servant = new Servant();
+
+            servant.Dispose();
+
+            var exception = await Assert.ThrowsAsync<ObjectDisposedException>(() => servant.CreateSingletonsAsync());
+
+            Assert.Equal(nameof(Servant), exception.ObjectName);
+        }
+
+        [Fact]
+        public async Task ServeAsync_AfterDisposeThrows()
+        {
+            var servant = new Servant();
+
+            servant.Dispose();
+
+            var exception = await Assert.ThrowsAsync<ObjectDisposedException>(() => servant.ServeAsync<Test1>());
+
+            Assert.Equal(nameof(Servant), exception.ObjectName);
+        }
+
+        [Fact]
+        public async Task Dispose_CanCallRepeatedly()
+        {
+            var servant = new Servant();
+
+            servant.Dispose();
+            servant.Dispose();
+            servant.Dispose();
+        }
+
+        #endregion
     }
 }

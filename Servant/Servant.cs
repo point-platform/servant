@@ -27,6 +27,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 
@@ -109,16 +110,22 @@ namespace Servant
 
             return instance;
         }
-    }
 
-    // TODO make disposable, disposing all singletons (what about transients?)
+        public void TryDisposeSingleton() => (_singletonInstance as IDisposable)?.Dispose();
+    }
 
     /// <summary>
     /// Serves instances of specific types, resolving dependencies as required, and running any async initialisation.
     /// </summary>
-    public sealed class Servant
+    /// <remarks>
+    /// Disposing this class will dispose any contained singleton instances that implement <see cref="IDisposable"/>.
+    /// Transient instances are not tracked by this class and must be disposed by their consumers.
+    /// </remarks>
+    public sealed class Servant : IDisposable
     {
         private readonly ConcurrentDictionary<Type, TypeEntry> _entryByType = new ConcurrentDictionary<Type, TypeEntry>();
+
+        private int _disposed;
 
         private TypeEntry GetOrAddTypeEntry(Type declaredType) => _entryByType.GetOrAdd(declaredType, t => new TypeEntry(t));
 
@@ -131,6 +138,9 @@ namespace Servant
         /// <param name="parameterTypes">The types of dependencies required by <paramref name="factory"/>.</param>
         public void Add(Lifestyle lifestyle, Type declaredType, Func<object[], Task<object>> factory, Type[] parameterTypes)
         {
+            if (_disposed != 0)
+                throw new ObjectDisposedException(nameof(Servant));
+
             // Validate the type doesn't depend upon itself
             if (parameterTypes.Contains(declaredType))
                 throw new ServantException($"Type \"{declaredType}\" depends upon its own type, which is disallowed.");
@@ -188,6 +198,9 @@ namespace Servant
         /// <returns>A task that completes when singleton initialisation has finished.</returns>
         public Task CreateSingletonsAsync()
         {
+            if (_disposed != 0)
+                throw new ObjectDisposedException(nameof(Servant));
+
             return Task.WhenAll(
                 from typeEntry in _entryByType.Values
                 let provider = typeEntry.Provider
@@ -202,11 +215,30 @@ namespace Servant
         /// <returns>A task that completes when the instance is ready.</returns>
         public Task<T> ServeAsync<T>()
         {
+            if (_disposed != 0)
+                throw new ObjectDisposedException(nameof(Servant));
+
             TypeEntry entry;
             if (!_entryByType.TryGetValue(typeof(T), out entry) || entry.Provider == null)
                 throw new ServantException($"Type \"{typeof(T)}\" is not registered.");
 
             return TaskUtil.Upcast<T>(entry.Provider.GetAsync());
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            if (Interlocked.CompareExchange(ref _disposed, 1, 0) != 0)
+                return;
+
+            var singletonInstances =
+                from typeEntry in _entryByType.Values
+                let provider = typeEntry.Provider
+                where provider?.Lifestyle == Lifestyle.Singleton
+                select provider;
+
+            foreach (var provider in singletonInstances)
+                provider.TryDisposeSingleton();
         }
     }
 
