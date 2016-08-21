@@ -220,6 +220,31 @@ namespace Servant.Tests
                 exception.Message);
         }
 
+        #region Differing instance/declared types
+
+        private interface IBase { }
+
+        private class Impl : IBase { }
+
+        [Fact]
+        public async Task AddSingleton_DifferentInstanceDeclaredTypes()
+        {
+            var servant = new Servant();
+
+            servant.AddSingleton<IBase, Impl>();
+
+            Assert.IsType<Impl>(await servant.ServeAsync<IBase>());
+
+            var exception = await Assert.ThrowsAsync<ServantException>(
+                () => servant.ServeAsync<Impl>());
+
+            Assert.Equal(
+                $"Type \"{typeof(Impl)}\" is not registered.",
+                exception.Message);
+        }
+
+        #endregion
+
         #region Cycles
 
         [ExcludeFromCodeCoverage]
