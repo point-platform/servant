@@ -55,6 +55,15 @@ for (var count = 1; count <= 16; count++)
     var typeValues = string.Join(", ", Enumerable.Range(1, count).Select(n => $"typeof(T{n})"));
     var args       = string.Join(", ", Enumerable.Range(1, count).Select(n => $"(T{n})args[{n-1}]"));
 #>
+        public static void AddTransient<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, TInstance> func)
+        {
+            servant.Add(
+			    Lifestyle.Transient,
+				typeof(TInstance),
+				args => Task.FromResult((object)func(<#= args #>)),
+				new[] {<#= typeValues #>});
+        }
+
         public static void AddTransient<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, Task<TInstance>> func)
         {
             servant.Add(
@@ -86,6 +95,15 @@ for (var count = 1; count <= 16; count++)
     var typeValues = string.Join(", ", Enumerable.Range(1, count).Select(n => $"typeof(T{n})"));
     var args       = string.Join(", ", Enumerable.Range(1, count).Select(n => $"(T{n})args[{n-1}]"));
 #>
+        public static void AddSingleton<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, TInstance> func)
+        {
+            servant.Add(
+			    Lifestyle.Singleton,
+				typeof(TInstance),
+				args => Task.FromResult((object)func(<#= args #>)),
+				new[] {<#= typeValues #>});
+        }
+
         public static void AddSingleton<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, Task<TInstance>> func)
         {
             servant.Add(
