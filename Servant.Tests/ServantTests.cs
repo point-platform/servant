@@ -31,8 +31,6 @@ using Xunit;
 namespace Servant.Tests
 {
     // TODO test failure cases
-    // - instance type already exists
-    // - dupe param types
     // - value types (should this be allowed)
     // - primitive types
     // TODO test factories throwing
