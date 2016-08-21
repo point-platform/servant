@@ -82,10 +82,14 @@ namespace Servant
             if (Lifestyle == Lifestyle.Singleton && _singletonInstance != null)
                 return _singletonInstance;
 
-            // TODO throw if re-entrant, using thread local? might not work in case of multi-threaded task scheduling
-
             // find arguments
-            var argumentTasks = Dependencies.Select(dep => dep.Provider.GetAsync()).ToList();
+            var argumentTasks = new List<Task<object>>();
+            foreach (var dep in Dependencies)
+            {
+                if (dep.Provider == null)
+                    throw new ServantException($"Type \"{dep.DeclaredType}\" is not registered.");
+                argumentTasks.Add(dep.Provider.GetAsync());
+            }
 
             await Task.WhenAll(argumentTasks);
 
@@ -199,7 +203,7 @@ namespace Servant
             Validate();
 
             TypeEntry entry;
-            if (!_nodeByType.TryGetValue(typeof(T), out entry))
+            if (!_nodeByType.TryGetValue(typeof(T), out entry) || entry.Provider == null)
                 throw new ServantException($"Type \"{typeof(T)}\" is not registered.");
 
             return TaskUtil.Upcast<T>(entry.Provider.GetAsync());

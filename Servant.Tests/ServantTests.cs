@@ -220,6 +220,49 @@ namespace Servant.Tests
                 exception.Message);
         }
 
+        [Fact]
+        public async Task ServeAsync_UnknownType()
+        {
+            var servant = new Servant();
+
+            var exception = await Assert.ThrowsAsync<ServantException>(
+                () => servant.ServeAsync<Test1>());
+
+            Assert.Equal(
+                $"Type \"{typeof(Test1)}\" is not registered.",
+                exception.Message);
+        }
+
+        [Fact]
+        public async Task ServeAsync_KnownTypeWithNoProvider_RequestedDirectly()
+        {
+            var servant = new Servant();
+
+            servant.AddSingleton<Test2>();
+
+            var exception = await Assert.ThrowsAsync<ServantException>(
+                () => servant.ServeAsync<Test1>());
+
+            Assert.Equal(
+                $"Type \"{typeof(Test1)}\" is not registered.",
+                exception.Message);
+        }
+
+        [Fact]
+        public async Task ServeAsync_KnownTypeWithNoProvider_RequestedIndirectly()
+        {
+            var servant = new Servant();
+
+            servant.AddSingleton<Test2>();
+
+            var exception = await Assert.ThrowsAsync<ServantException>(
+                () => servant.ServeAsync<Test2>());
+
+            Assert.Equal(
+                $"Type \"{typeof(Test1)}\" is not registered.",
+                exception.Message);
+        }
+
         #region Differing instance/declared types
 
         private interface IBase { }
