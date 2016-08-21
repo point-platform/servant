@@ -112,9 +112,9 @@ namespace Servant
     /// </summary>
     public sealed class Servant
     {
-        private readonly ConcurrentDictionary<Type, TypeEntry> _nodeByType = new ConcurrentDictionary<Type, TypeEntry>();
+        private readonly ConcurrentDictionary<Type, TypeEntry> _entryByType = new ConcurrentDictionary<Type, TypeEntry>();
 
-        private TypeEntry GetOrAddTypeNode(Type declaredType) => _nodeByType.GetOrAdd(declaredType, t => new TypeEntry(t));
+        private TypeEntry GetOrAddTypeEntry(Type declaredType) => _entryByType.GetOrAdd(declaredType, t => new TypeEntry(t));
 
         /// <summary>
         /// Adds the means of obtaining an instance of type <paramref name="declaredType"/>.
@@ -138,7 +138,7 @@ namespace Servant
             foreach (var parameterType in parameterTypes)
             {
                 TypeEntry parameterTypeEntry;
-                if (!_nodeByType.TryGetValue(parameterType, out parameterTypeEntry))
+                if (!_entryByType.TryGetValue(parameterType, out parameterTypeEntry))
                     continue;
 
                 // Creates a cycle if one of parameterTypes depends upon declaredType
@@ -146,12 +146,12 @@ namespace Servant
                     throw new ServantException($"Type \"{declaredType}\" cannot depend upon type \"{parameterType}\" as this would create circular dependencies.");
             }
 
-            var typeNode = GetOrAddTypeNode(declaredType);
+            var typeEntry = GetOrAddTypeEntry(declaredType);
 
-            if (typeNode.Provider != null)
+            if (typeEntry.Provider != null)
                 throw new ServantException($"Type \"{declaredType}\" already registered.");
 
-            typeNode.Provider = new TypeProvider(factory, lifestyle, parameterTypes.Select(GetOrAddTypeNode).ToList());
+            typeEntry.Provider = new TypeProvider(factory, lifestyle, parameterTypes.Select(GetOrAddTypeEntry).ToList());
         }
 
         private static bool DependsUpon(TypeEntry dependant, Type dependent)
@@ -189,7 +189,7 @@ namespace Servant
         public Task<T> ServeAsync<T>()
         {
             TypeEntry entry;
-            if (!_nodeByType.TryGetValue(typeof(T), out entry) || entry.Provider == null)
+            if (!_entryByType.TryGetValue(typeof(T), out entry) || entry.Provider == null)
                 throw new ServantException($"Type \"{typeof(T)}\" is not registered.");
 
             return TaskUtil.Upcast<T>(entry.Provider.GetAsync());
