@@ -31,7 +31,6 @@ using Xunit;
 namespace Servant.Tests
 {
     // TODO test failure cases
-    // - cycle
     // - instance type already exists
     // - dupe param types
     // - value types (should this be allowed)
@@ -220,5 +219,40 @@ namespace Servant.Tests
                 "Type \"Servant.Tests.Test1\" already registered.",
                 exception.Message);
         }
+
+        #region Cycles
+
+        private class Cycle1
+        {
+            public Cycle1(Cycle2 c) { }
+        }
+
+        private class Cycle2
+        {
+            public Cycle2(Cycle3 c) { }
+        }
+
+        private class Cycle3
+        {
+            public Cycle3(Cycle1 c) { }
+        }
+
+        [Fact]
+        public async Task Add_CycleThrows()
+        {
+            var servant = new Servant();
+
+            servant.AddSingleton((Cycle2 c) => new Cycle1(c));
+            servant.AddSingleton((Cycle3 c) => new Cycle2(c));
+
+            var exception = Assert.Throws<ServantException>(
+                () => servant.AddSingleton((Cycle1 c) => new Cycle3(c)));
+
+            Assert.Equal(
+                "Type \"Servant.Tests.ServantTests+Cycle3\" cannot depend upon type \"Servant.Tests.ServantTests+Cycle1\" as this would create circular dependencies.",
+                exception.Message);
+        }
+
+        #endregion
     }
 }

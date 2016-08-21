@@ -125,7 +125,6 @@ namespace Servant
         /// <param name="parameterTypes">The types of dependencies required by <paramref name="factory"/>.</param>
         public void Add(Lifestyle lifestyle, Type declaredType, Func<object[], Task<object>> factory, Type[] parameterTypes)
         {
-            // TODO if creation fails somehow, might need to delete the node (or do work in lambda passed to GetOrAdd so throw prohibits add
             // Validate the type doesn't depend upon itself
             if (parameterTypes.Contains(declaredType))
                 throw new ServantException($"Type \"{declaredType}\" depends upon its own type, which is disallowed.");
@@ -135,6 +134,18 @@ namespace Servant
             if (dupes.Count != 0)
                 throw new ServantException($"Type \"{declaredType}\" has multiple dependencies upon type{(dupes.Count == 1 ? "" : "s")} {string.Join(", ", dupes.Select(t => $"\"{t}\""))}, which is disallowed.");
 
+            // Validate we won't end up creating a cycle
+            foreach (var parameterType in parameterTypes)
+            {
+                TypeEntry parameterTypeEntry;
+                if (!_nodeByType.TryGetValue(parameterType, out parameterTypeEntry))
+                    continue;
+
+                // Creates a cycle if one of parameterTypes depends upon declaredType
+                if (DependsUpon(parameterTypeEntry, declaredType))
+                    throw new ServantException($"Type \"{declaredType}\" cannot depend upon type \"{parameterType}\" as this would create circular dependencies.");
+            }
+
             var typeNode = GetOrAddTypeNode(declaredType);
 
             if (typeNode.Provider != null)
@@ -143,12 +154,27 @@ namespace Servant
             typeNode.Provider = new TypeProvider(factory, declaredType, lifestyle, parameterTypes.Select(GetOrAddTypeNode).ToList());
         }
 
+        private static bool DependsUpon(TypeEntry dependant, Type dependent)
+        {
+            if (dependant.Provider == null)
+                return false;
+
+            foreach (var dependency in dependant.Provider.Dependencies)
+            {
+                if (dependency.DeclaredType == dependent)
+                    return true;
+
+                if (DependsUpon(dependency, dependent))
+                    return true;
+            }
+
+            return false;
+        }
+
         private void Validate()
         {
             if (!_validationRequired)
                 return;
-
-            // TODO validate dependency graph does not contain cycles
 
             _validationRequired = false;
         }
