@@ -131,7 +131,7 @@ namespace Servant
             var typeNode = GetOrAddTypeNode(declaredType);
 
             if (typeNode.Provider != null)
-                throw new InvalidOperationException($"Type {declaredType} already registered.");
+                throw new ServantException($"Type \"{declaredType}\" already registered.");
 
             typeNode.Provider = new TypeProvider(factory, declaredType, lifestyle, parameterTypes.Select(GetOrAddTypeNode).ToList());
         }
@@ -169,9 +169,24 @@ namespace Servant
 
             TypeEntry entry;
             if (!_nodeByType.TryGetValue(typeof(T), out entry))
-                throw new InvalidOperationException($"Type {typeof(T)} not supported.");
+                throw new ServantException($"Type {typeof(T)} not supported.");
 
             return TaskUtil.Upcast<T>(entry.Provider.GetAsync());
         }
+    }
+
+    /// <summary>
+    /// An exception raised by Servant.
+    /// </summary>
+    public sealed class ServantException : Exception
+    {
+        /// <inheritdoc />
+        public ServantException() { }
+
+        /// <inheritdoc />
+        public ServantException(string message) : base(message) { }
+
+        /// <inheritdoc />
+        public ServantException(string message, Exception innerException) : base(message, innerException) { }
     }
 }
