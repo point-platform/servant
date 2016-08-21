@@ -104,7 +104,7 @@ namespace Servant
 
     // TODO make disposable, disposing all singletons (what about transients?)
 
-    public class Servant
+    public sealed class Servant
     {
         private readonly ConcurrentDictionary<Type, TypeEntry> _nodeByType = new ConcurrentDictionary<Type, TypeEntry>();
 
