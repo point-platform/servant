@@ -63,6 +63,45 @@ namespace Servant
                 parameterTypes);
         }
 
+        public static void AddSingleton<TDeclared, TInstance>(this Servant servant) where TInstance : TDeclared
+        {
+            Type[] parameterTypes;
+            Func<object[], Task<object>> func;
+            GetConstructor(typeof(TInstance), out parameterTypes, out func);
+
+            servant.Add(
+                Lifestyle.Singleton,
+                typeof(TDeclared),
+                func,
+                parameterTypes);
+        }
+
+        public static void AddTransient<TInstance>(this Servant servant)
+        {
+            Type[] parameterTypes;
+            Func<object[], Task<object>> func;
+            GetConstructor(typeof(TInstance), out parameterTypes, out func);
+
+            servant.Add(
+                Lifestyle.Transient,
+                typeof(TInstance),
+                func,
+                parameterTypes);
+        }
+
+        public static void AddTransient<TDeclared, TInstance>(this Servant servant) where TInstance : TDeclared
+        {
+            Type[] parameterTypes;
+            Func<object[], Task<object>> func;
+            GetConstructor(typeof(TInstance), out parameterTypes, out func);
+
+            servant.Add(
+                Lifestyle.Transient,
+                typeof(TDeclared),
+                func,
+                parameterTypes);
+        }
+
         private static void GetConstructor(Type type, out Type[] parameterTypes, out Func<object[], Task<object>> func)
         {
             var constructors = type.GetConstructors();
