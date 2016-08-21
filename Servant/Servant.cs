@@ -114,8 +114,6 @@ namespace Servant
     {
         private readonly ConcurrentDictionary<Type, TypeEntry> _nodeByType = new ConcurrentDictionary<Type, TypeEntry>();
 
-        private bool _validationRequired;
-
         private TypeEntry GetOrAddTypeNode(Type declaredType) => _nodeByType.GetOrAdd(declaredType, t => new TypeEntry(t));
 
         /// <summary>
@@ -173,14 +171,6 @@ namespace Servant
             return false;
         }
 
-        private void Validate()
-        {
-            if (!_validationRequired)
-                return;
-
-            _validationRequired = false;
-        }
-
         /// <summary>
         /// Eagerly initialises all types registered as having <see cref="Lifestyle.Singleton"/> lifestyle.
         /// </summary>
@@ -188,8 +178,6 @@ namespace Servant
         /// <returns></returns>
         public Task CreateSingletonsAsync()
         {
-            Validate();
-
             throw new NotImplementedException();
         }
 
@@ -200,8 +188,6 @@ namespace Servant
         /// <returns>A task that completes when the instance is ready.</returns>
         public Task<T> ServeAsync<T>()
         {
-            Validate();
-
             TypeEntry entry;
             if (!_nodeByType.TryGetValue(typeof(T), out entry) || entry.Provider == null)
                 throw new ServantException($"Type \"{typeof(T)}\" is not registered.");
