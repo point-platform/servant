@@ -26,6 +26,7 @@ using System;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace Servant
 {
@@ -50,7 +51,7 @@ namespace Servant
                 Type.EmptyTypes);
         }
 
-        public static void AddSingleton<TInstance>(this Servant servant)
+        public static void AddSingleton<[MeansImplicitUse] TInstance>(this Servant servant)
         {
             Type[] parameterTypes;
             Func<object[], Task<object>> func;
@@ -63,7 +64,7 @@ namespace Servant
                 parameterTypes);
         }
 
-        public static void AddSingleton<TDeclared, TInstance>(this Servant servant) where TInstance : TDeclared
+        public static void AddSingleton<TDeclared, [MeansImplicitUse] TInstance>(this Servant servant) where TInstance : TDeclared
         {
             Type[] parameterTypes;
             Func<object[], Task<object>> func;
@@ -76,7 +77,7 @@ namespace Servant
                 parameterTypes);
         }
 
-        public static void AddTransient<TInstance>(this Servant servant)
+        public static void AddTransient<[MeansImplicitUse] TInstance>(this Servant servant)
         {
             Type[] parameterTypes;
             Func<object[], Task<object>> func;
@@ -89,7 +90,7 @@ namespace Servant
                 parameterTypes);
         }
 
-        public static void AddTransient<TDeclared, TInstance>(this Servant servant) where TInstance : TDeclared
+        public static void AddTransient<TDeclared, [MeansImplicitUse] TInstance>(this Servant servant) where TInstance : TDeclared
         {
             Type[] parameterTypes;
             Func<object[], Task<object>> func;
