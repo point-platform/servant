@@ -61,7 +61,7 @@ namespace Servant
 
     internal sealed class TypeProvider
     {
-        public Lifestyle Lifestyle { get; }
+        private Lifestyle Lifestyle { get; }
         public IReadOnlyList<TypeEntry> Dependencies { get; }
 
         private readonly Func<object[], Task<object>> _factory;
