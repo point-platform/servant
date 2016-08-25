@@ -36,44 +36,57 @@ namespace Servant
     /// </summary>
     public static partial class ServantExtensions
     {
+        #region AddTransient
+
+        public static void AddTransient<[MeansImplicitUse] TInstance>(this Servant servant)
+        {
+            Type[] parameterTypes;
+            Func<object[], Task<object>> func;
+            GetConstructor(typeof(TInstance), out parameterTypes, out func);
+
+            servant.Add(
+                Lifestyle.Transient,
+                typeof(TInstance),
+                func,
+                parameterTypes);
+        }
+
+        public static void AddTransient<TDeclared, [MeansImplicitUse] TInstance>(this Servant servant) where TInstance : TDeclared
+        {
+            Type[] parameterTypes;
+            Func<object[], Task<object>> func;
+            GetConstructor(typeof(TInstance), out parameterTypes, out func);
+
+            servant.Add(
+                Lifestyle.Transient,
+                typeof(TDeclared),
+                func,
+                parameterTypes);
+        }
+
         [ExcludeFromCodeCoverage]
-        public static void AddSingleton<TInstance>(this Servant servant, Func<TInstance> func)
+        public static void AddTransient<TInstance>(this Servant servant, Func<TInstance> func)
         {
             servant.Add(
-                Lifestyle.Singleton,
+                Lifestyle.Transient,
                 typeof(TInstance),
                 args => Task.FromResult((object)func()),
                 Type.EmptyTypes);
         }
 
         [ExcludeFromCodeCoverage]
-        public static void AddSingleton<TInstance>(this Servant servant, Func<Task<TInstance>> func)
+        public static void AddTransient<TInstance>(this Servant servant, Func<Task<TInstance>> func)
         {
             servant.Add(
-                Lifestyle.Singleton,
+                Lifestyle.Transient,
                 typeof(TInstance),
                 args => TaskUtil.Downcast(func()),
                 Type.EmptyTypes);
         }
 
-        /// <summary>
-        /// Adds an existing instance of type <typeparamref name="TInstance"/> as a singleton.
-        /// </summary>
-        /// <remarks>There is no <see cref="Lifestyle.Transient"/> equivalent of this method.</remarks>
-        /// <typeparam name="TInstance">The declared type of the instance being added.</typeparam>
-        /// <param name="servant">The instance of <see cref="Servant"/> to add the singleton instance to.</param>
-        /// <param name="instance">The singleton instance to add for type <typeparamref name="TInstance"/>.</param>
-        public static void AddSingleton<TInstance>(this Servant servant, [NotNull] TInstance instance)
-        {
-            if (instance == null)
-                throw new ArgumentNullException(nameof(instance));
+        #endregion
 
-            servant.Add(
-                Lifestyle.Singleton,
-                typeof(TInstance),
-                args => Task.FromResult((object)instance),
-                Type.EmptyTypes);
-        }
+        #region AddSingleton
 
         /// <summary>
         /// Registers type <typeparamref name="TInstance"/> as a singleton to be created via constructor injection.
@@ -112,51 +125,46 @@ namespace Servant
                 parameterTypes);
         }
 
+        /// <summary>
+        /// Adds an existing instance of type <typeparamref name="TInstance"/> as a singleton.
+        /// </summary>
+        /// <remarks>There is no <see cref="Lifestyle.Transient"/> equivalent of this method.</remarks>
+        /// <typeparam name="TInstance">The declared type of the instance being added.</typeparam>
+        /// <param name="servant">The instance of <see cref="Servant"/> to add the singleton instance to.</param>
+        /// <param name="instance">The singleton instance to add for type <typeparamref name="TInstance"/>.</param>
+        public static void AddSingleton<TInstance>(this Servant servant, [NotNull] TInstance instance)
+        {
+            if (instance == null)
+                throw new ArgumentNullException(nameof(instance));
+
+            servant.Add(
+                Lifestyle.Singleton,
+                typeof(TInstance),
+                args => Task.FromResult((object)instance),
+                Type.EmptyTypes);
+        }
+
         [ExcludeFromCodeCoverage]
-        public static void AddTransient<TInstance>(this Servant servant, Func<TInstance> func)
+        public static void AddSingleton<TInstance>(this Servant servant, Func<TInstance> func)
         {
             servant.Add(
-                Lifestyle.Transient,
+                Lifestyle.Singleton,
                 typeof(TInstance),
                 args => Task.FromResult((object)func()),
                 Type.EmptyTypes);
         }
 
         [ExcludeFromCodeCoverage]
-        public static void AddTransient<TInstance>(this Servant servant, Func<Task<TInstance>> func)
+        public static void AddSingleton<TInstance>(this Servant servant, Func<Task<TInstance>> func)
         {
             servant.Add(
-                Lifestyle.Transient,
+                Lifestyle.Singleton,
                 typeof(TInstance),
                 args => TaskUtil.Downcast(func()),
                 Type.EmptyTypes);
         }
 
-        public static void AddTransient<[MeansImplicitUse] TInstance>(this Servant servant)
-        {
-            Type[] parameterTypes;
-            Func<object[], Task<object>> func;
-            GetConstructor(typeof(TInstance), out parameterTypes, out func);
-
-            servant.Add(
-                Lifestyle.Transient,
-                typeof(TInstance),
-                func,
-                parameterTypes);
-        }
-
-        public static void AddTransient<TDeclared, [MeansImplicitUse] TInstance>(this Servant servant) where TInstance : TDeclared
-        {
-            Type[] parameterTypes;
-            Func<object[], Task<object>> func;
-            GetConstructor(typeof(TInstance), out parameterTypes, out func);
-
-            servant.Add(
-                Lifestyle.Transient,
-                typeof(TDeclared),
-                func,
-                parameterTypes);
-        }
+        #endregion
 
         private static void GetConstructor(Type type, out Type[] parameterTypes, out Func<object[], Task<object>> func)
         {
