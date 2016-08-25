@@ -319,6 +319,36 @@ namespace Servant.Tests
             Assert.Equal(1, callCount);
         }
 
+        [Fact]
+        public void IsTypeRegistered()
+        {
+            var servant = new Servant();
+
+            Assert.False(servant.IsTypeRegistered<Impl>());
+            Assert.False(servant.IsTypeRegistered(typeof(Impl)));
+            Assert.False(servant.IsTypeRegistered(typeof(IBase)));
+
+            servant.AddSingleton<Impl>();
+
+            Assert.True(servant.IsTypeRegistered<Impl>());
+            Assert.True(servant.IsTypeRegistered(typeof(Impl)));
+            Assert.False(servant.IsTypeRegistered(typeof(IBase)));
+        }
+
+        [Fact]
+        public void IsTypeRegistered_DependencyNotRegistered()
+        {
+            var servant = new Servant();
+
+            Assert.False(servant.IsTypeRegistered<Test1>());
+            Assert.False(servant.IsTypeRegistered<Test2>());
+
+            servant.AddSingleton<Test2>();
+
+            Assert.False(servant.IsTypeRegistered<Test1>());
+            Assert.True(servant.IsTypeRegistered<Test2>());
+        }
+
         #region Differing instance/declared types
 
         private interface IBase { }

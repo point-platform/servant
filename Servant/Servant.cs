@@ -225,6 +225,14 @@ namespace Servant
             return TaskUtil.Upcast<T>(entry.Provider.GetAsync());
         }
 
+        public bool IsTypeRegistered<T>() => IsTypeRegistered(typeof(T));
+
+        public bool IsTypeRegistered(Type type)
+        {
+            TypeEntry entry;
+            return _entryByType.TryGetValue(type, out entry) && entry.Provider != null;
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {
