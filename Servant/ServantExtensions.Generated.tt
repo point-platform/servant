@@ -38,26 +38,26 @@ namespace Servant
 
     public static partial class ServantExtensions
     {
-		#region AddTransient
+        #region AddTransient
 
-		[ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage]
         public static void AddTransient<TInstance>(this Servant servant, Func<TInstance> func)
         {
             servant.Add(
-			    Lifestyle.Transient,
-				typeof(TInstance),
-				args => Task.FromResult((object)func()),
-				Type.EmptyTypes);
+                Lifestyle.Transient,
+                typeof(TInstance),
+                args => Task.FromResult((object)func()),
+                Type.EmptyTypes);
         }
 
-		[ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage]
         public static void AddTransient<TInstance>(this Servant servant, Func<Task<TInstance>> func)
         {
             servant.Add(
-			    Lifestyle.Transient,
-				typeof(TInstance),
-				args => TaskUtil.Downcast(func()),
-				Type.EmptyTypes);
+                Lifestyle.Transient,
+                typeof(TInstance),
+                args => TaskUtil.Downcast(func()),
+                Type.EmptyTypes);
         }
 
 <#
@@ -67,50 +67,50 @@ for (var count = 1; count <= 16; count++)
     var typeValues = string.Join(", ", Enumerable.Range(1, count).Select(n => $"typeof(T{n})"));
     var args       = string.Join(", ", Enumerable.Range(1, count).Select(n => $"(T{n})args[{n-1}]"));
 #>
-		[ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage]
         public static void AddTransient<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, TInstance> func)
         {
             servant.Add(
-			    Lifestyle.Transient,
-				typeof(TInstance),
-				args => Task.FromResult((object)func(<#= args #>)),
-				new[] {<#= typeValues #>});
+                Lifestyle.Transient,
+                typeof(TInstance),
+                args => Task.FromResult((object)func(<#= args #>)),
+                new[] {<#= typeValues #>});
         }
 
-		[ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage]
         public static void AddTransient<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, Task<TInstance>> func)
         {
             servant.Add(
-			    Lifestyle.Transient,
-				typeof(TInstance),
-				args => TaskUtil.Downcast(func(<#= args #>)),
-				new[] {<#= typeValues #>});
+                Lifestyle.Transient,
+                typeof(TInstance),
+                args => TaskUtil.Downcast(func(<#= args #>)),
+                new[] {<#= typeValues #>});
         }
 
 <# } #>
 
-		#endregion
+        #endregion
 
-		#region AddSingleton
+        #region AddSingleton
 
-		[ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage]
         public static void AddSingleton<TInstance>(this Servant servant, Func<TInstance> func)
         {
             servant.Add(
-			    Lifestyle.Singleton,
-				typeof(TInstance),
-				args => Task.FromResult((object)func()),
-				Type.EmptyTypes);
+                Lifestyle.Singleton,
+                typeof(TInstance),
+                args => Task.FromResult((object)func()),
+                Type.EmptyTypes);
         }
 
-		[ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage]
         public static void AddSingleton<TInstance>(this Servant servant, Func<Task<TInstance>> func)
         {
             servant.Add(
-			    Lifestyle.Singleton,
-				typeof(TInstance),
-				args => TaskUtil.Downcast(func()),
-				Type.EmptyTypes);
+                Lifestyle.Singleton,
+                typeof(TInstance),
+                args => TaskUtil.Downcast(func()),
+                Type.EmptyTypes);
         }
 
 <#
@@ -120,28 +120,28 @@ for (var count = 1; count <= 16; count++)
     var typeValues = string.Join(", ", Enumerable.Range(1, count).Select(n => $"typeof(T{n})"));
     var args       = string.Join(", ", Enumerable.Range(1, count).Select(n => $"(T{n})args[{n-1}]"));
 #>
-		[ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage]
         public static void AddSingleton<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, TInstance> func)
         {
             servant.Add(
-			    Lifestyle.Singleton,
-				typeof(TInstance),
-				args => Task.FromResult((object)func(<#= args #>)),
-				new[] {<#= typeValues #>});
+                Lifestyle.Singleton,
+                typeof(TInstance),
+                args => Task.FromResult((object)func(<#= args #>)),
+                new[] {<#= typeValues #>});
         }
 
-		[ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage]
         public static void AddSingleton<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, Task<TInstance>> func)
         {
             servant.Add(
-			    Lifestyle.Singleton,
-				typeof(TInstance),
-				args => TaskUtil.Downcast(func(<#= args #>)),
-				new[] {<#= typeValues #>});
+                Lifestyle.Singleton,
+                typeof(TInstance),
+                args => TaskUtil.Downcast(func(<#= args #>)),
+                new[] {<#= typeValues #>});
         }
 
 <# } #>
 
-		#endregion
+        #endregion
     }
 }
