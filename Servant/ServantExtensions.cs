@@ -54,6 +54,17 @@ namespace Servant
                 Type.EmptyTypes);
         }
 
+        /// <summary>
+        /// Registers type <typeparamref name="TInstance"/> as a singleton to be created via constructor injection.
+        /// </summary>
+        /// <remarks>
+        /// Instantiation occurs when first required, or when <see cref="Servant.CreateSingletonsAsync"/> is invoked.
+        /// <para />
+        /// <typeparamref name="TInstance"/> must have a single constructor, and any parameter types of that
+        /// constructor must be obtainable via the <paramref name="servant"/>.
+        /// </remarks>
+        /// <typeparam name="TInstance">The type to register.</typeparam>
+        /// <param name="servant">The <see cref="Servant"/> instance to register the type with.</param>
         public static void AddSingleton<[MeansImplicitUse] TInstance>(this Servant servant)
         {
             Type[] parameterTypes;
