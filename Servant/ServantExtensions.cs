@@ -23,6 +23,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
@@ -35,6 +36,26 @@ namespace Servant
     /// </summary>
     public static partial class ServantExtensions
     {
+        [ExcludeFromCodeCoverage]
+        public static void AddSingleton<TInstance>(this Servant servant, Func<TInstance> func)
+        {
+            servant.Add(
+                Lifestyle.Singleton,
+                typeof(TInstance),
+                args => Task.FromResult((object)func()),
+                Type.EmptyTypes);
+        }
+
+        [ExcludeFromCodeCoverage]
+        public static void AddSingleton<TInstance>(this Servant servant, Func<Task<TInstance>> func)
+        {
+            servant.Add(
+                Lifestyle.Singleton,
+                typeof(TInstance),
+                args => TaskUtil.Downcast(func()),
+                Type.EmptyTypes);
+        }
+
         /// <summary>
         /// Adds an existing instance of type <typeparamref name="TInstance"/> as a singleton.
         /// </summary>
@@ -89,6 +110,26 @@ namespace Servant
                 typeof(TDeclared),
                 func,
                 parameterTypes);
+        }
+
+        [ExcludeFromCodeCoverage]
+        public static void AddTransient<TInstance>(this Servant servant, Func<TInstance> func)
+        {
+            servant.Add(
+                Lifestyle.Transient,
+                typeof(TInstance),
+                args => Task.FromResult((object)func()),
+                Type.EmptyTypes);
+        }
+
+        [ExcludeFromCodeCoverage]
+        public static void AddTransient<TInstance>(this Servant servant, Func<Task<TInstance>> func)
+        {
+            servant.Add(
+                Lifestyle.Transient,
+                typeof(TInstance),
+                args => TaskUtil.Downcast(func()),
+                Type.EmptyTypes);
         }
 
         public static void AddTransient<[MeansImplicitUse] TInstance>(this Servant servant)
