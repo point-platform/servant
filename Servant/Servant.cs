@@ -91,7 +91,7 @@ namespace Servant
             foreach (var dep in Dependencies)
             {
                 if (dep.Provider == null)
-                    throw new ServantException($"Type \"{dep.DeclaredType}\" is not registered.");
+                    throw new ServantException($"Type \"{_declaredType}\" depends upon unregistered type \"{dep.DeclaredType}\".");
                 argumentTasks.Add(dep.Provider.GetAsync());
             }
 

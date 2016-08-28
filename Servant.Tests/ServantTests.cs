@@ -260,7 +260,7 @@ namespace Servant.Tests
                 () => servant.ServeAsync<Test2>());
 
             Assert.Equal(
-                $"Type \"{typeof(Test1)}\" is not registered.",
+                $"Type \"{typeof(Test2)}\" depends upon unregistered type \"{typeof(Test1)}\".",
                 exception.Message);
         }
 
