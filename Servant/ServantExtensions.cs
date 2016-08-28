@@ -39,6 +39,16 @@ namespace Servant
     {
         #region AddTransient
 
+        /// <summary>
+        /// Registers type <typeparamref name="TInstance"/> for constructor dependency injection
+        /// with <see cref="Lifestyle.Transient"/> lifestyle.
+        /// </summary>
+        /// <remarks>
+        /// <typeparamref name="TInstance"/> must have a single public constructor, and any parameter types of that
+        /// constructor must registered with <paramref name="servant"/> before calling <see cref="Servant.ServeAsync{T}"/>.
+        /// </remarks>
+        /// <typeparam name="TInstance">The type to register with the servant.</typeparam>
+        /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
         public static void AddTransient<[MeansImplicitUse] TInstance>(this Servant servant)
         {
             Type[] parameterTypes;
@@ -52,6 +62,18 @@ namespace Servant
                 parameterTypes);
         }
 
+        /// <summary>
+        /// Registers type <typeparamref name="TDeclared"/> to be resolved by sub-type
+        /// <typeparamref name="TInstance"/> which is instantiated via constructor dependency injection
+        /// with <see cref="Lifestyle.Transient"/> lifestyle.
+        /// </summary>
+        /// <remarks>
+        /// <typeparamref name="TInstance"/> must have a single public constructor, and any parameter types of that
+        /// constructor must registered with <paramref name="servant"/> before calling <see cref="Servant.ServeAsync{T}"/>.
+        /// </remarks>
+        /// <typeparam name="TDeclared">The type to register and later search by.</typeparam>
+        /// <typeparam name="TInstance">The type to instantiate when providing an instance of <typeparamref name="TDeclared"/>.</typeparam>
+        /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
         public static void AddTransient<TDeclared, [MeansImplicitUse] TInstance>(this Servant servant) where TInstance : TDeclared
         {
             Type[] parameterTypes;
@@ -65,6 +87,13 @@ namespace Servant
                 parameterTypes);
         }
 
+        /// <summary>
+        /// Registers type <typeparamref name="TInstance"/> with <see cref="Lifestyle.Transient"/> lifestyle
+        /// to be provided via callback function <paramref name="func"/> which has no dependencies.
+        /// </summary>
+        /// <typeparam name="TInstance">The type to register.</typeparam>
+        /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
+        /// <param name="func">A function that provides an instance of <typeparamref name="TInstance"/>.</param>
         [ExcludeFromCodeCoverage]
         public static void AddTransient<TInstance>(this Servant servant, Func<TInstance> func)
         {
@@ -75,6 +104,13 @@ namespace Servant
                 Type.EmptyTypes);
         }
 
+        /// <summary>
+        /// Registers type <typeparamref name="TInstance"/> with <see cref="Lifestyle.Transient"/> lifestyle
+        /// to be provided via asynchronous callback function <paramref name="func"/> which has no dependencies.
+        /// </summary>
+        /// <typeparam name="TInstance">The type to register.</typeparam>
+        /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
+        /// <param name="func">A function that asynchronously provides an instance of <typeparamref name="TInstance"/> via a <see cref="Task{TResult}"/>.</param>
         [ExcludeFromCodeCoverage]
         public static void AddTransient<TInstance>(this Servant servant, Func<Task<TInstance>> func)
         {
@@ -90,16 +126,17 @@ namespace Servant
         #region AddSingleton
 
         /// <summary>
-        /// Registers type <typeparamref name="TInstance"/> as a singleton to be created via constructor injection.
+        /// Registers type <typeparamref name="TInstance"/> as a <see cref="Lifestyle.Singleton"/> to be created via constructor injection.
         /// </summary>
         /// <remarks>
         /// Instantiation occurs when first required, or when <see cref="Servant.CreateSingletonsAsync"/> is invoked.
         /// <para />
-        /// <typeparamref name="TInstance"/> must have a single constructor, and any parameter types of that
-        /// constructor must be obtainable via the <paramref name="servant"/>.
+        /// <typeparamref name="TInstance"/> must have a single public constructor, and any parameter types of that
+        /// constructor must registered with <paramref name="servant"/> before calling <see cref="Servant.ServeAsync{T}"/>
+        /// or <see cref="Servant.CreateSingletonsAsync"/>.
         /// </remarks>
         /// <typeparam name="TInstance">The type to register.</typeparam>
-        /// <param name="servant">The <see cref="Servant"/> instance to register the type with.</param>
+        /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
         public static void AddSingleton<[MeansImplicitUse] TInstance>(this Servant servant)
         {
             Type[] parameterTypes;
@@ -113,6 +150,19 @@ namespace Servant
                 parameterTypes);
         }
 
+        /// <summary>
+        /// Registers type <typeparamref name="TDeclared"/> to be resolved by sub-type
+        /// <typeparamref name="TInstance"/> which is instantiated via constructor dependency injection
+        /// with <see cref="Lifestyle.Singleton"/> lifestyle.
+        /// </summary>
+        /// <remarks>
+        /// <typeparamref name="TInstance"/> must have a single public constructor, and any parameter types of that
+        /// constructor must registered with <paramref name="servant"/> before calling <see cref="Servant.ServeAsync{T}"/>
+        /// or <see cref="Servant.CreateSingletonsAsync"/>.
+        /// </remarks>
+        /// <typeparam name="TDeclared">The type to register and later search by.</typeparam>
+        /// <typeparam name="TInstance">The type to instantiate when providing an instance of <typeparamref name="TDeclared"/>.</typeparam>
+        /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
         public static void AddSingleton<TDeclared, [MeansImplicitUse] TInstance>(this Servant servant) where TInstance : TDeclared
         {
             Type[] parameterTypes;
@@ -127,7 +177,7 @@ namespace Servant
         }
 
         /// <summary>
-        /// Adds an existing instance of type <typeparamref name="TInstance"/> as a singleton.
+        /// Adds an existing instance of type <typeparamref name="TInstance"/> as a <see cref="Lifestyle.Singleton"/>.
         /// </summary>
         /// <remarks>There is no <see cref="Lifestyle.Transient"/> equivalent of this method.</remarks>
         /// <typeparam name="TInstance">The declared type of the instance being added.</typeparam>
@@ -145,6 +195,13 @@ namespace Servant
                 Type.EmptyTypes);
         }
 
+        /// <summary>
+        /// Registers type <typeparamref name="TInstance"/> with <see cref="Lifestyle.Singleton"/> lifestyle
+        /// to be provided via callback function <paramref name="func"/> which has no dependencies.
+        /// </summary>
+        /// <typeparam name="TInstance">The type to register.</typeparam>
+        /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
+        /// <param name="func">A function that provides the singleton instance of <typeparamref name="TInstance"/>.</param>
         [ExcludeFromCodeCoverage]
         public static void AddSingleton<TInstance>(this Servant servant, Func<TInstance> func)
         {
@@ -155,6 +212,13 @@ namespace Servant
                 Type.EmptyTypes);
         }
 
+        /// <summary>
+        /// Registers type <typeparamref name="TInstance"/> with <see cref="Lifestyle.Singleton"/> lifestyle
+        /// to be provided via asynchronous callback function <paramref name="func"/> which has no dependencies.
+        /// </summary>
+        /// <typeparam name="TInstance">The type to register.</typeparam>
+        /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
+        /// <param name="func">A function that asynchronously provides the singleton instance of <typeparamref name="TInstance"/> via a <see cref="Task{TResult}"/>.</param>
         [ExcludeFromCodeCoverage]
         public static void AddSingleton<TInstance>(this Servant servant, Func<Task<TInstance>> func)
         {

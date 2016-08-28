@@ -41,12 +41,25 @@ namespace Servant
         #region AddTransient
 
 <#
+var numbers  = new[] { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen" };
+var numberth = new[] { "first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "nineth", "tenth", "eleventh", "twelfth", "thirteenth", "fourteenth", "fifteenth", "sixteenth" };
 for (var count = 1; count <= 16; count++)
 {
     var typeNames  = string.Join(", ", Enumerable.Range(1, count).Select(n => $"T{n}"));
     var typeValues = string.Join(", ", Enumerable.Range(1, count).Select(n => $"typeof(T{n})"));
     var args       = string.Join(", ", Enumerable.Range(1, count).Select(n => $"(T{n})args[{n-1}]"));
+    var depCount   = $"{numbers[count-1]} {(count == 1 ? "dependency" : "dependencies")}";
 #>
+        /// <summary>
+        /// Registers type <typeparamref name="TInstance"/> with <see cref="Lifestyle.Transient"/> lifestyle
+        /// to be provided via callback function <paramref name="func"/> which has <#= depCount #>.
+        /// </summary>
+<# for (var i = 1; i <= count; i++) { #>
+        /// <typeparam name="T<#=i#>">The <#= numberth[i-1] #> dependency type.</typeparam>
+<# } #>
+        /// <typeparam name="TInstance">The type to register.</typeparam>
+        /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
+        /// <param name="func">A function that provides an instance of <typeparamref name="TInstance"/> when passed <#= depCount #>.</param>
         [ExcludeFromCodeCoverage]
         public static void AddTransient<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, TInstance> func)
         {
@@ -57,6 +70,16 @@ for (var count = 1; count <= 16; count++)
                 new[] {<#= typeValues #>});
         }
 
+        /// <summary>
+        /// Registers type <typeparamref name="TInstance"/> with <see cref="Lifestyle.Transient"/> lifestyle
+        /// to be provided via asynchronous callback function <paramref name="func"/> which has <#= depCount #>.
+        /// </summary>
+        /// <typeparam name="TInstance">The type to register.</typeparam>
+<# for (var i = 1; i <= count; i++) { #>
+        /// <typeparam name="T<#=i#>">The <#= numberth[i-1] #> dependency type.</typeparam>
+<# } #>
+        /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
+        /// <param name="func">A function that asynchronously provides an instance of <typeparamref name="TInstance"/> via a <see cref="Task{TResult}"/> when passed <#= depCount #>.</param>
         [ExcludeFromCodeCoverage]
         public static void AddTransient<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, Task<TInstance>> func)
         {
@@ -79,7 +102,18 @@ for (var count = 1; count <= 16; count++)
     var typeNames  = string.Join(", ", Enumerable.Range(1, count).Select(n => $"T{n}"));
     var typeValues = string.Join(", ", Enumerable.Range(1, count).Select(n => $"typeof(T{n})"));
     var args       = string.Join(", ", Enumerable.Range(1, count).Select(n => $"(T{n})args[{n-1}]"));
+    var depCount   = $"{numbers[count-1]} {(count == 1 ? "dependency" : "dependencies")}";
 #>
+        /// <summary>
+        /// Registers type <typeparamref name="TInstance"/> with <see cref="Lifestyle.Singleton"/> lifestyle
+        /// to be provided via callback function <paramref name="func"/> which has <#= depCount #>.
+        /// </summary>
+        /// <typeparam name="TInstance">The type to register.</typeparam>
+<# for (var i = 1; i <= count; i++) { #>
+        /// <typeparam name="T<#=i#>">The <#= numberth[i-1] #> dependency type.</typeparam>
+<# } #>
+        /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
+        /// <param name="func">A function that provides the singleton instance of <typeparamref name="TInstance"/> when passed <#= depCount #>.</param>
         [ExcludeFromCodeCoverage]
         public static void AddSingleton<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, TInstance> func)
         {
@@ -90,6 +124,16 @@ for (var count = 1; count <= 16; count++)
                 new[] {<#= typeValues #>});
         }
 
+        /// <summary>
+        /// Registers type <typeparamref name="TInstance"/> with <see cref="Lifestyle.Singleton"/> lifestyle
+        /// to be provided via asynchronous callback function <paramref name="func"/> which has <#= depCount #>.
+        /// </summary>
+        /// <typeparam name="TInstance">The type to register.</typeparam>
+<# for (var i = 1; i <= count; i++) { #>
+        /// <typeparam name="T<#=i#>">The <#= numberth[i-1] #> dependency type.</typeparam>
+<# } #>
+        /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
+        /// <param name="func">A function that asynchronously provides the singleton instance of <typeparamref name="TInstance"/> via a <see cref="Task{TResult}"/> when passed <#= depCount #>.</param>
         [ExcludeFromCodeCoverage]
         public static void AddSingleton<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, Task<TInstance>> func)
         {

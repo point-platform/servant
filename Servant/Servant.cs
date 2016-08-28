@@ -225,8 +225,32 @@ namespace Servant
             return TaskUtil.Upcast<T>(entry.Provider.GetAsync());
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the type <typeparamref name="T"/> has been registered with this servant.
+        /// </summary>
+        /// <remarks>
+        /// Just because a type is registered, does not mean it can be served. It may depend upon other
+        /// types which have not been registered.
+        /// <para />
+        /// If a type is known only as a dependency of a type passed to one of the <c>Add</c> methods,
+        /// then this method returns <c>false</c>.
+        /// </remarks>
+        /// <typeparam name="T">The type to test for.</typeparam>
+        /// <returns><c>true</c> if the type has been registered, otherwise <c>false</c>.</returns>
         public bool IsTypeRegistered<T>() => IsTypeRegistered(typeof(T));
 
+        /// <summary>
+        /// Gets a value indicating whether the type <paramref name="type"/> has been registered with this servant.
+        /// </summary>
+        /// <remarks>
+        /// Just because a type is registered, does not mean it can be served. It may depend upon other
+        /// types which have not been registered.
+        /// <para />
+        /// If a type is known only as a dependency of a type passed to one of the <c>Add</c> methods,
+        /// then this method returns <c>false</c>.
+        /// </remarks>
+        /// <param name="type">The type to test for.</param>
+        /// <returns><c>true</c> if the type has been registered, otherwise <c>false</c>.</returns>
         public bool IsTypeRegistered(Type type)
         {
             TypeEntry entry;
