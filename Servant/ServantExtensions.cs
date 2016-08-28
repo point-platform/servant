@@ -34,6 +34,7 @@ namespace Servant
     /// <summary>
     /// Extension methods for working with instances of <see cref="Servant"/>.
     /// </summary>
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public static partial class ServantExtensions
     {
         #region AddTransient
