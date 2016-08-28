@@ -41,6 +41,7 @@ namespace Servant
                 t =>
                 {
                     if (t.IsFaulted)
+                        // ReSharper disable once PossibleNullReferenceException
                         tcs.TrySetException(t.Exception.InnerExceptions);
                     else if (t.IsCanceled)
                         tcs.TrySetCanceled();
@@ -63,6 +64,7 @@ namespace Servant
                 t =>
                 {
                     if (t.IsFaulted)
+                        // ReSharper disable once PossibleNullReferenceException
                         tcs.TrySetException(t.Exception.InnerExceptions);
                     else if (t.IsCanceled)
                         tcs.TrySetCanceled();
