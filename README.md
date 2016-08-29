@@ -13,35 +13,86 @@ There are many DI frameworks out there already, so why another? Most frameworks 
 and are fundamentally incompatible with code that awaits during initialisation.
 Such code must be _"async all the way down"_, and that's exactly what Servant is.
 
+# Show me the code
+
 ```csharp
+// Construct a new, empty, servant.
 var servant = new Servant();
 
+// Register type ServerProxy for implicit creation as a singleton.
 servant.AddSingleton<ServerProxy>();
-servant.AddSingleton<Config>(async (ServerProxy server) => await server.RequestConfig());
 
+// Register type Config for explicit creation via the async Func<> as a transient.
+servant.AddTransient<Config>(async (ServerProxy server) => await server.RequestConfig());
+
+// Request Servant to serve up a Config instance.
+// The singleton ServerProxy will be instantiated lazily and passed to the above Func<>.
 var config = await servant.ServeAsync<Config>();
 ```
 
-Each type added to a `Servant` must be resolved in a single operation:
+# Registering types
+
+Each type registered with a `Servant` must be resolvable via one of the following means:
     
-- A constructor call, as with `ServerProxy` above
+- An implicit constructor or factory call, as with `ServerProxy` above
 - A `Func<>` returning a `T` or `Task<T>`, as with `ServerProxy` above
-- An instance directly, such as `servant.AddSingleton(instance)`
+- A pre-constructed instance, such as `servant.AddSingleton(instance)`
 
-Types may have one of two lifestyles:
+Types can be `class` or `struct`, and may be `public`, `internal`, or `private`.
+
+# Lifestyles
+
+Types may be registered with one of two lifestyles:
     
-- `Singleton` instances are created only once
-- `Transient` instances are created per request
+- `Singleton` instances are created per servant. If multiple dependants for the type exist, they receive the same instance.
+- `Transient` instances are created per request. Multiple dependants receive their own copies.
 
----
+Note that the servant tracks singleton instances, and if they implement `IDisposable` will dispose them when you call `Servant.Dispose`.
+Transient instances cannot be tracked by the servant, and their lifespans must be managed by their consumers.
+
+# Rules for implicit creation
+
+Types can be implicitly constructed via calls such as `AddSingleton<SomeType>()` so long as `SomeType` meets one of two criteria:
+
+- Either it has a single public constructor, or
+- It has a single static factory method (of any name) returning either `SomeType` or `Task<SomeType>`.
+
+In general, constructor injection is simplest. However constructors cannot be `async`, whereas factory methods can be.
+
+Here are two examples of valid types (member bodies omitted):
+
+```csharp
+public class ConstructorExample
+{
+    // Servant will find this constructor and call it to obtain an instance of the type.
+    // There must be only a single public constructor to use constructor injection.
+    public ConstructorExample(DependencyType1 dep1, DependencyType2 dep2)
+    { }
+}
+
+public class FactoryExample
+{
+    // Servant will find this method and call it to obtain an instance of the type.
+    // The method name doesn't matter. It must be public and static though.
+    // The return type can be either Task<FactoryExample> or just FactoryExample.
+    // There must be only one method on the type that meets these criteria.
+    public static Task<FactoryExample> CreateAsync(DependencyType1 dep1, DependencyType2 dep2)
+    { }
+
+    private FactoryExample(/* ... */)
+    { }
+}
+
+
+```
 
 # Installation
 
-NuGet makes using the library easy:
+Install the package from [NuGet](https://www.nuget.org/packages/Servant/):
 
 > Install-Package Servant
 
----
+Or clone the repo and build your own version.
 
 # License
 
