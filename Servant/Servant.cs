@@ -66,13 +66,15 @@ namespace Servant
         public Lifestyle Lifestyle { get; }
         public IReadOnlyList<TypeEntry> Dependencies { get; }
 
+        private readonly Servant _servant;
         private readonly Func<object[], Task<object>> _factory;
         private readonly Type _declaredType;
 
         [CanBeNull] private object _singletonInstance;
 
-        public TypeProvider(Func<object[], Task<object>> factory, Type declaredType, Lifestyle lifestyle, IReadOnlyList<TypeEntry> dependencies)
+        public TypeProvider(Servant servant, Func<object[], Task<object>> factory, Type declaredType, Lifestyle lifestyle, IReadOnlyList<TypeEntry> dependencies)
         {
+            _servant = servant;
             _factory = factory;
             _declaredType = declaredType;
             Lifestyle = lifestyle;
@@ -91,7 +93,17 @@ namespace Servant
             foreach (var dep in Dependencies)
             {
                 if (dep.Provider == null)
-                    throw new ServantException($"Type \"{_declaredType}\" depends upon unregistered type \"{dep.DeclaredType}\".");
+                {
+                    // No provider exists for this dependency.
+                    var message = $"Type \"{_declaredType}\" depends upon unregistered type \"{dep.DeclaredType}\".";
+
+                    // See whether we have a super-type of the requested type.
+                    var superTypes = _servant.GetRegisteredTypes().Where(type => type.IsAssignableFrom(dep.DeclaredType)).ToList();
+                    if (superTypes.Any())
+                        message += $" Did you mean to reference registered super type {string.Join(" or ", superTypes.Select(st => $"\"{st}\""))}?";
+
+                    throw new ServantException(message);
+                }
                 argumentTasks.Add(dep.Provider.GetAsync());
             }
 
@@ -167,7 +179,7 @@ namespace Servant
             if (typeEntry.Provider != null)
                 throw new ServantException($"Type \"{declaredType}\" already registered.");
 
-            typeEntry.Provider = new TypeProvider(factory, declaredType, lifestyle, parameterTypes.Select(GetOrAddTypeEntry).ToList());
+            typeEntry.Provider = new TypeProvider(this, factory, declaredType, lifestyle, parameterTypes.Select(GetOrAddTypeEntry).ToList());
         }
 
         private static bool DependsUpon(TypeEntry dependant, Type dependent)

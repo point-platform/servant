@@ -265,6 +265,22 @@ namespace Servant.Tests
         }
 
         [Fact]
+        public async Task ServeAsync_KnownTypeWithNoProvider_RequestedIndirectly_HasSuperType()
+        {
+            var servant = new Servant();
+
+            servant.AddSingleton<IBase, Impl>();
+            servant.AddSingleton<ImplDependant>();
+
+            var exception = await Assert.ThrowsAsync<ServantException>(
+                () => servant.ServeAsync<ImplDependant>());
+
+            Assert.Equal(
+                $"Type \"{typeof(ImplDependant)}\" depends upon unregistered type \"{typeof(Impl)}\". Did you mean to reference registered super type \"{typeof(IBase)}\"?",
+                exception.Message);
+        }
+
+        [Fact]
         public async Task AddSingleton_NullInstanceThrows()
         {
             var servant = new Servant();
@@ -367,6 +383,9 @@ namespace Servant.Tests
 
         [ExcludeFromCodeCoverage]
         private class Impl : IBase { }
+
+        [ExcludeFromCodeCoverage]
+        private class ImplDependant { public ImplDependant(Impl impl) { } }
 
         [Fact]
         public async Task AddSingleton_DifferentInstanceDeclaredTypes()
