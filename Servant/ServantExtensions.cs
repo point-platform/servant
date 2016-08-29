@@ -25,6 +25,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -53,7 +54,7 @@ namespace Servant
         {
             Type[] parameterTypes;
             Func<object[], Task<object>> func;
-            GetConstructor(typeof(TInstance), out parameterTypes, out func);
+            GetConstructionFunc(typeof(TInstance), out parameterTypes, out func);
 
             servant.Add(
                 Lifestyle.Transient,
@@ -78,7 +79,7 @@ namespace Servant
         {
             Type[] parameterTypes;
             Func<object[], Task<object>> func;
-            GetConstructor(typeof(TInstance), out parameterTypes, out func);
+            GetConstructionFunc(typeof(TInstance), out parameterTypes, out func);
 
             servant.Add(
                 Lifestyle.Transient,
@@ -141,7 +142,7 @@ namespace Servant
         {
             Type[] parameterTypes;
             Func<object[], Task<object>> func;
-            GetConstructor(typeof(TInstance), out parameterTypes, out func);
+            GetConstructionFunc(typeof(TInstance), out parameterTypes, out func);
 
             servant.Add(
                 Lifestyle.Singleton,
@@ -167,7 +168,7 @@ namespace Servant
         {
             Type[] parameterTypes;
             Func<object[], Task<object>> func;
-            GetConstructor(typeof(TInstance), out parameterTypes, out func);
+            GetConstructionFunc(typeof(TInstance), out parameterTypes, out func);
 
             servant.Add(
                 Lifestyle.Singleton,
@@ -231,27 +232,40 @@ namespace Servant
 
         #endregion
 
-        private static void GetConstructor(Type type, out Type[] parameterTypes, out Func<object[], Task<object>> func)
+        private static void GetConstructionFunc(Type type, out Type[] parameterTypes, out Func<object[], Task<object>> func)
         {
             var constructors = type.GetConstructors();
 
-            if (constructors.Length != 1)
-                throw new ServantException($"Type \"{type}\" must have a single constructor to use implicit construction. Either ensure a single constructor exists, or register the type with a Func<> instead.");
+            var factoryMethods =
+                (from method in type.GetMethods(BindingFlags.Static | BindingFlags.Public)
+                where method.ReturnType == type || method.ReturnType == typeof(Task<>).MakeGenericType(type)
+                select method).ToList();
+
+            var canUseConstructor = constructors.Length == 1;
+            var canUseFactory = factoryMethods.Count == 1;
+
+            if (!canUseConstructor && !canUseFactory)
+                throw new ServantException($"Type \"{type}\" must have a single public constructor, or a single public static factory method (returning \"{type}\" or \"Task<{type}>\" to use implicit construction. Either ensure a single public constructor or factory method exists, or register the type with a Func<> instead.");
 
             // TODO validate all types involved are reference types (?) or support boxing value types
             // TODO validate nothing fancy about the parameters
             // TODO support default parameter values?
 
-            parameterTypes = constructors[0].GetParameters().Select(p => p.ParameterType).ToArray();
-
-            var method = new DynamicMethod(
-                $"{type.Name}ConstructorFunc",
+            var dynamicMethod = new DynamicMethod(
+                $"{type.Name}ConstructionFunc",
                 returnType: typeof(Task<object>),
                 parameterTypes: new[] { typeof(object[]) },
                 restrictedSkipVisibility: true);
 
-            var ilg = method.GetILGenerator();
+            var ilg = dynamicMethod.GetILGenerator();
 
+            var parameterInfos = canUseConstructor
+                ? constructors[0].GetParameters()
+                : factoryMethods[0].GetParameters();
+
+            parameterTypes = parameterInfos.Select(p => p.ParameterType).ToArray();
+
+            // Read parameter values from the array argument, and cast them to the required types
             for (var i = 0; i < parameterTypes.Length; i++)
             {
                 var parameterType = parameterTypes[i];
@@ -264,15 +278,42 @@ namespace Servant
                 ilg.Emit(OpCodes.Castclass, parameterType);
             }
 
-            ilg.Emit(OpCodes.Newobj, constructors[0]);
+            if (canUseConstructor)
+            {
+                // Call the constructor
+                ilg.Emit(OpCodes.Newobj, constructors[0]);
 
-            ilg.Emit(OpCodes.Castclass, typeof(object));
+                // Downcast to object
+                ilg.Emit(OpCodes.Castclass, typeof(object));
 
-            ilg.Emit(OpCodes.Call, typeof(Task).GetMethod(nameof(Task.FromResult)).MakeGenericMethod(typeof(object)));
+                // Store in a Task<object>
+                ilg.Emit(OpCodes.Call, typeof(Task).GetMethod(nameof(Task.FromResult)).MakeGenericMethod(typeof(object)));
+            }
+            else
+            {
+                // Call the factory method
+                ilg.Emit(OpCodes.Call, factoryMethods[0]);
+
+                var hasTask = factoryMethods[0].ReturnType == typeof(Task<>).MakeGenericType(type);
+
+                if (!hasTask)
+                {
+                    // Downcast to object
+                    ilg.Emit(OpCodes.Castclass, typeof(object));
+
+                    // Store in a Task<object>
+                    ilg.Emit(OpCodes.Call, typeof(Task).GetMethod(nameof(Task.FromResult)).MakeGenericMethod(typeof(object)));
+                }
+                else
+                {
+                    // Downcast to Task<object>
+                    ilg.Emit(OpCodes.Call, typeof(TaskUtil).GetMethod(nameof(TaskUtil.Downcast)).MakeGenericMethod(type));
+                }
+            }
 
             ilg.Emit(OpCodes.Ret);
 
-            func = (Func<object[], Task<object>>)method.CreateDelegate(typeof(Func<object[], Task<object>>));
+            func = (Func<object[], Task<object>>)dynamicMethod.CreateDelegate(typeof(Func<object[], Task<object>>));
         }
     }
 }

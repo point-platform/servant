@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 using Xunit;
 
 #pragma warning disable 1998
@@ -158,8 +159,10 @@ namespace Servant.Tests
             Assert.Same(test1, await servant.ServeAsync<Test1>());
         }
 
+        #region Constructor injection
+
         [Fact]
-        public async Task AddSingleton_Ctor_NoDependency()
+        public async Task AddSingleton_ConstructorInjection_NoDependency()
         {
             var servant = new Servant();
 
@@ -169,7 +172,7 @@ namespace Servant.Tests
         }
 
         [Fact]
-        public async Task AddSingleton_Ctor_SingleDependency()
+        public async Task AddSingleton_ConstructorInjection_SingleDependency()
         {
             var servant = new Servant();
 
@@ -178,8 +181,169 @@ namespace Servant.Tests
 
             var test2 = await servant.ServeAsync<Test2>();
             Assert.IsType<Test2>(test2);
-            Assert.IsType<Test1>(test2.Test1);
+            Assert.NotNull(test2.Test1);
         }
+
+        #region Multiple constructors
+
+        [ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "UnusedMember.Local")]
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
+        private class MultiCtor
+        {
+            private MultiCtor() { }
+            private MultiCtor(IBase b) { }
+        }
+
+        [Fact]
+        public async Task AddSingleton_ConstructorInjection_MultipleConstructors()
+        {
+            var servant = new Servant();
+
+            var exception = Assert.Throws<ServantException>(
+                () => servant.AddSingleton<MultiCtor>());
+
+            Assert.Equal(
+                $"Type \"{typeof(MultiCtor)}\" must have a single public constructor, or a single public static factory method (returning \"{typeof(MultiCtor)}\" or \"Task<{typeof(MultiCtor)}>\" to use implicit construction. Either ensure a single public constructor or factory method exists, or register the type with a Func<> instead.",
+                exception.Message);
+        }
+
+        #endregion
+
+        #region No constructors
+
+        [ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "UnusedMember.Local")]
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
+        private class NoCtor
+        {
+            private NoCtor() { }
+            private NoCtor(IBase b) { }
+        }
+
+        [Fact]
+        public async Task AddSingleton_ConstructorInjection_NoConstructor()
+        {
+            var servant = new Servant();
+
+            var exception = Assert.Throws<ServantException>(
+                () => servant.AddSingleton<NoCtor>());
+
+            Assert.Equal(
+                $"Type \"{typeof(NoCtor)}\" must have a single public constructor, or a single public static factory method (returning \"{typeof(NoCtor)}\" or \"Task<{typeof(NoCtor)}>\" to use implicit construction. Either ensure a single public constructor or factory method exists, or register the type with a Func<> instead.",
+                exception.Message);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Factory injection
+
+        public class FactorySyncNoDeps
+        {
+            [UsedImplicitly]
+            public static FactorySyncNoDeps Create() => new FactorySyncNoDeps();
+            private FactorySyncNoDeps() { }
+        }
+
+        [Fact]
+        public async Task AddSingleton_FactoryInjection_Synchronous_NoDependency()
+        {
+            var servant = new Servant();
+
+            servant.AddSingleton<FactorySyncNoDeps>();
+
+            Assert.IsType<FactorySyncNoDeps>(await servant.ServeAsync<FactorySyncNoDeps>());
+        }
+
+        public class FactoryAsyncNoDeps
+        {
+            [UsedImplicitly]
+            public static Task<FactoryAsyncNoDeps> CreateAsync() => Task.FromResult(new FactoryAsyncNoDeps());
+            private FactoryAsyncNoDeps() { }
+        }
+
+        [Fact]
+        public async Task AddSingleton_FactoryInjection_Asynchronous_NoDependency()
+        {
+            var servant = new Servant();
+
+            servant.AddSingleton<FactoryAsyncNoDeps>();
+
+            Assert.IsType<FactoryAsyncNoDeps>(await servant.ServeAsync<FactoryAsyncNoDeps>());
+        }
+
+        public class FactorySyncDeps
+        {
+            public Test1 Test1 { get; }
+            [UsedImplicitly]
+            public static FactorySyncDeps CreateSomething(Test1 test1) => new FactorySyncDeps(test1);
+            private FactorySyncDeps(Test1 test1) { Test1 = test1; }
+        }
+
+        [Fact]
+        public async Task AddSingleton_FactoryInjection_Synchronous_Dependency()
+        {
+            var servant = new Servant();
+
+            servant.AddSingleton<Test1>();
+            servant.AddSingleton<FactorySyncDeps>();
+
+            var o = await servant.ServeAsync<FactorySyncDeps>();
+            Assert.IsType<FactorySyncDeps>(o);
+            Assert.NotNull(o.Test1);
+        }
+
+        public class FactoryAsyncDeps
+        {
+            public Test1 Test1 { get; }
+            [UsedImplicitly]
+            public static Task<FactoryAsyncDeps> NameDoesntMatter(Test1 test1) => Task.FromResult(new FactoryAsyncDeps(test1));
+            private FactoryAsyncDeps(Test1 test1) { Test1 = test1; }
+        }
+
+        [Fact]
+        public async Task AddSingleton_FactoryInjection_Asynchronous_Dependency()
+        {
+            var servant = new Servant();
+
+            servant.AddSingleton<Test1>();
+            servant.AddSingleton<FactoryAsyncDeps>();
+
+            var o = await servant.ServeAsync<FactoryAsyncDeps>();
+            Assert.IsType<FactoryAsyncDeps>(o);
+            Assert.NotNull(o.Test1);
+        }
+
+        #region Multiple factories
+
+        [ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "UnusedMember.Local")]
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
+        private class MultiFactory
+        {
+            public static MultiFactory Factory1(IBase b) => new MultiFactory();
+            public static Task<MultiFactory> Factory2(IBase b) => Task.FromResult(new MultiFactory());
+            private MultiFactory() { }
+        }
+
+        [Fact]
+        public async Task AddSingleton_FactoryInjection_MultipleFactories()
+        {
+            var servant = new Servant();
+
+            var exception = Assert.Throws<ServantException>(
+                () => servant.AddSingleton<MultiFactory>());
+
+            Assert.Equal(
+                $"Type \"{typeof(MultiFactory)}\" must have a single public constructor, or a single public static factory method (returning \"{typeof(MultiFactory)}\" or \"Task<{typeof(MultiFactory)}>\" to use implicit construction. Either ensure a single public constructor or factory method exists, or register the type with a Func<> instead.",
+                exception.Message);
+        }
+
+        #endregion
+
+        #endregion
 
         [Fact]
         public async Task Add_DuplicateDependencyTypesDisallowed()
@@ -453,32 +617,6 @@ namespace Servant.Tests
 
         #endregion
 
-        #region Add type with multiple constructors
-
-		[ExcludeFromCodeCoverage]
-        [SuppressMessage("ReSharper", "UnusedMember.Local")]
-        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
-        private class MultiCtor
-        {
-            private MultiCtor() { }
-            private MultiCtor(IBase b) { }
-        }
-
-        [Fact]
-        public async Task Add_MultipleConstructors()
-        {
-            var servant = new Servant();
-
-            var exception = Assert.Throws<ServantException>(
-                () => servant.AddSingleton<MultiCtor>());
-
-            Assert.Equal(
-                $"Type \"{typeof(MultiCtor)}\" must have a single constructor to use implicit construction. Either ensure a single constructor exists, or register the type with a Func<> instead.",
-                exception.Message);
-        }
-
-        #endregion
-
         #region Disposal
 
         [ExcludeFromCodeCoverage]
@@ -562,15 +700,9 @@ namespace Servant.Tests
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private class DisposableDependant : IDisposable
         {
-            public int DisposeCount { get; private set; }
-
             public DisposableDependant(Disposable disposable) { }
 
-            public void Dispose()
-            {
-                Disposable.Disposals.Add(typeof(DisposableDependant));
-                DisposeCount++;
-            }
+            public void Dispose() => Disposable.Disposals.Add(typeof(DisposableDependant));
         }
 
         [Fact]
