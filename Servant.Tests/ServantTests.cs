@@ -186,6 +186,7 @@ namespace Servant.Tests
             var servant = new Servant();
 
             var exception = Assert.Throws<ServantException>(
+                // ReSharper disable once AssignNullToNotNullAttribute
                 () => servant.AddSingleton<Test1, Test1, Test2>((a, b) => (Test2)null));
 
             Assert.Equal(
@@ -199,6 +200,7 @@ namespace Servant.Tests
             var servant = new Servant();
 
             var exception = Assert.Throws<ServantException>(
+                // ReSharper disable once AssignNullToNotNullAttribute
                 () => servant.AddSingleton<Test1, Test1>(a => (Test1)null));
 
             Assert.Equal(
@@ -294,6 +296,7 @@ namespace Servant.Tests
         {
             var servant = new Servant();
 
+            // ReSharper disable once AssignNullToNotNullAttribute
             servant.AddSingleton(() => (Task<Test1>)null);
 
             await Assert.ThrowsAsync<ArgumentNullException>(
@@ -305,6 +308,7 @@ namespace Servant.Tests
         {
             var servant = new Servant();
 
+            // ReSharper disable once AssignNullToNotNullAttribute
             servant.AddSingleton(() => (Test1)null);
 
             var exception = await Assert.ThrowsAsync<ServantException>(() => servant.ServeAsync<Test1>());
@@ -385,6 +389,7 @@ namespace Servant.Tests
         private class Impl : IBase { }
 
         [ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private class ImplDependant { public ImplDependant(Impl impl) { } }
 
         [Fact]
