@@ -25,111 +25,12 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using JetBrains.Annotations;
 
 namespace Servant
 {
-    /// <summary>
-    /// Specifies how instances are reused between dependants.
-    /// </summary>
-    public enum Lifestyle
-    {
-        /// <summary>
-        /// Only a single instance of the service will be created.
-        /// </summary>
-        Singleton,
-
-        /// <summary>
-        /// A new instance of the service will be created for each dependant.
-        /// </summary>
-        Transient
-    }
-
-    internal sealed class TypeEntry
-    {
-        public Type DeclaredType { get; }
-
-        [CanBeNull] public TypeProvider Provider { get; set; }
-
-        public TypeEntry(Type declaredType)
-        {
-            DeclaredType = declaredType;
-        }
-    }
-
-    internal sealed class TypeProvider
-    {
-        public Lifestyle Lifestyle { get; }
-        public IReadOnlyList<TypeEntry> Dependencies { get; }
-
-        private readonly Servant _servant;
-        private readonly Func<object[], Task<object>> _factory;
-        private readonly Type _declaredType;
-
-        [CanBeNull] private object _singletonInstance;
-
-        public TypeProvider(Servant servant, Func<object[], Task<object>> factory, Type declaredType, Lifestyle lifestyle, IReadOnlyList<TypeEntry> dependencies)
-        {
-            _servant = servant;
-            _factory = factory;
-            _declaredType = declaredType;
-            Lifestyle = lifestyle;
-            Dependencies = dependencies;
-        }
-
-        public async Task<object> GetAsync()
-        {
-            // TODO make concurrency-safe here to avoid double-allocation of singleton
-
-            if (Lifestyle == Lifestyle.Singleton && _singletonInstance != null)
-                return _singletonInstance;
-
-            // find arguments
-            var argumentTasks = new List<Task<object>>();
-            foreach (var dep in Dependencies)
-            {
-                if (dep.Provider == null)
-                {
-                    // No provider exists for this dependency.
-                    var message = $"Type \"{_declaredType}\" depends upon unregistered type \"{dep.DeclaredType}\".";
-
-                    // See whether we have a super-type of the requested type.
-                    var superTypes = _servant.GetRegisteredTypes().Where(type => type.IsAssignableFrom(dep.DeclaredType)).ToList();
-                    if (superTypes.Any())
-                        message += $" Did you mean to reference registered super type {string.Join(" or ", superTypes.Select(st => $"\"{st}\""))}?";
-
-                    throw new ServantException(message);
-                }
-                argumentTasks.Add(dep.Provider.GetAsync());
-            }
-
-            await Task.WhenAll(argumentTasks);
-
-            var instance = await _factory.Invoke(argumentTasks.Select(t => t.Result).ToArray());
-
-            if (instance == null)
-                throw new ServantException($"Instance for type \"{_declaredType}\" cannot be null.");
-
-            if (!_declaredType.IsInstanceOfType(instance))
-                throw new ServantException($"Instance produced for type \"{_declaredType}\" is not an instance of that type.");
-
-            if (Lifestyle == Lifestyle.Singleton)
-            {
-                _singletonInstance = instance;
-
-                var disposable = instance as IDisposable;
-                if (disposable != null)
-                    _servant.PushDisposableSingleton(disposable);
-            }
-
-            return instance;
-        }
-    }
-
     /// <summary>
     /// Serves instances of specific types, resolving dependencies as required, and running any async initialisation.
     /// </summary>
@@ -302,21 +203,5 @@ namespace Servant
             while (_disposableSingletons.TryPop(out disposable))
                 disposable.Dispose();
         }
-    }
-
-    /// <summary>
-    /// An exception raised by Servant.
-    /// </summary>
-    [ExcludeFromCodeCoverage]
-    public sealed class ServantException : Exception
-    {
-        /// <inheritdoc />
-        public ServantException() { }
-
-        /// <inheritdoc />
-        public ServantException(string message) : base(message) { }
-
-        /// <inheritdoc />
-        public ServantException(string message, Exception innerException) : base(message, innerException) { }
     }
 }

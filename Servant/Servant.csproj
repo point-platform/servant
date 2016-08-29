@@ -39,8 +39,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Lifestyle.cs" />
     <Compile Include="Servant.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServantException.cs" />
     <Compile Include="ServantExtensions.cs" />
     <Compile Include="ServantExtensions.Generated.cs">
       <AutoGen>True</AutoGen>
@@ -48,6 +50,8 @@
       <DependentUpon>ServantExtensions.Generated.tt</DependentUpon>
     </Compile>
     <Compile Include="TaskUtil.cs" />
+    <Compile Include="TypeEntry.cs" />
+    <Compile Include="TypeProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
