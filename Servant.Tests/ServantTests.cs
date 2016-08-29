@@ -349,6 +349,18 @@ namespace Servant.Tests
             Assert.True(servant.IsTypeRegistered<Test2>());
         }
 
+        [Fact]
+        public void GetRegisteredTypes()
+        {
+            var servant = new Servant();
+
+            Assert.Equal(Type.EmptyTypes, servant.GetRegisteredTypes());
+
+            servant.AddSingleton<IBase, Impl>();
+
+            Assert.Equal(new[] {typeof(IBase)}, servant.GetRegisteredTypes());
+        }
+
         #region Differing instance/declared types
 
         private interface IBase { }

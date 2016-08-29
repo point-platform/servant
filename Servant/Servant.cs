@@ -257,6 +257,17 @@ namespace Servant
             return _entryByType.TryGetValue(type, out entry) && entry.Provider != null;
         }
 
+        /// <summary>
+        /// Gets all types registered with this servant.
+        /// </summary>
+        /// <returns>An enumeration of registered types.</returns>
+        public IEnumerable<Type> GetRegisteredTypes()
+        {
+            return from entry in _entryByType.Values
+                   where entry.Provider != null
+                   select entry.DeclaredType;
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {
