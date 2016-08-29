@@ -48,7 +48,7 @@ namespace Servant.Tests
         public Test2(Test1 test1) { Test1 = test1; }
     }
 
-    public class ServantTests
+    public sealed class ServantTests
     {
         [Fact]
         public async Task AddTransient_AsyncFunc_NoDependencies()
