@@ -23,6 +23,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using Xunit;
@@ -483,10 +484,13 @@ namespace Servant.Tests
         [ExcludeFromCodeCoverage]
         private class Disposable : IDisposable
         {
+            public static readonly List<Type> Disposals = new List<Type>();
+
             public int DisposeCount { get; private set; }
 
             public void Dispose()
             {
+                Disposals.Add(typeof(Disposable));
                 DisposeCount++;
             }
         }
@@ -552,6 +556,39 @@ namespace Servant.Tests
             servant.Dispose();
             servant.Dispose();
             servant.Dispose();
+        }
+
+        [ExcludeFromCodeCoverage]
+        [SuppressMessage("ReSharper", "UnusedParameter.Local")]
+        private class DisposableDependant : IDisposable
+        {
+            public int DisposeCount { get; private set; }
+
+            public DisposableDependant(Disposable disposable) { }
+
+            public void Dispose()
+            {
+                Disposable.Disposals.Add(typeof(DisposableDependant));
+                DisposeCount++;
+            }
+        }
+
+        [Fact]
+        public async void Dispose_DisposedInReverseDependencyOrder()
+        {
+            var servant = new Servant();
+
+            servant.AddSingleton<Disposable>();
+            servant.AddSingleton<DisposableDependant>();
+
+            await servant.CreateSingletonsAsync();
+
+            Assert.Equal(0, Disposable.Disposals.Count);
+
+            servant.Dispose();
+
+            // Must dispose singletons in reverse dependency order
+            Assert.Equal(new[] { typeof(DisposableDependant), typeof(Disposable) }, Disposable.Disposals);
         }
 
         #endregion

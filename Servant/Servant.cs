@@ -118,12 +118,16 @@ namespace Servant
                 throw new ServantException($"Instance produced for type \"{_declaredType}\" is not an instance of that type.");
 
             if (Lifestyle == Lifestyle.Singleton)
+            {
                 _singletonInstance = instance;
+
+                var disposable = instance as IDisposable;
+                if (disposable != null)
+                    _servant.PushDisposableSingleton(disposable);
+            }
 
             return instance;
         }
-
-        public void TryDisposeSingleton() => (_singletonInstance as IDisposable)?.Dispose();
     }
 
     /// <summary>
@@ -136,6 +140,7 @@ namespace Servant
     public sealed class Servant : IDisposable
     {
         private readonly ConcurrentDictionary<Type, TypeEntry> _entryByType = new ConcurrentDictionary<Type, TypeEntry>();
+        private readonly ConcurrentStack<IDisposable> _disposableSingletons = new ConcurrentStack<IDisposable>();
 
         private int _disposed;
 
@@ -280,20 +285,22 @@ namespace Servant
                    select entry.DeclaredType;
         }
 
+        internal void PushDisposableSingleton(IDisposable disposableSingletonInstance)
+        {
+            // We push disposable instances onto a stack and dispose them in reverse order
+            _disposableSingletons.Push(disposableSingletonInstance);
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {
             if (Interlocked.CompareExchange(ref _disposed, 1, 0) != 0)
                 return;
 
-            var singletonInstances =
-                from typeEntry in _entryByType.Values
-                let provider = typeEntry.Provider
-                where provider?.Lifestyle == Lifestyle.Singleton
-                select provider;
-
-            foreach (var provider in singletonInstances)
-                provider.TryDisposeSingleton();
+            // TODO catch exceptions and throw an aggregate?
+            IDisposable disposable;
+            while (_disposableSingletons.TryPop(out disposable))
+                disposable.Dispose();
         }
     }
 
