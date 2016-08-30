@@ -41,12 +41,17 @@ namespace Servant
         #region AddTransient
 
         /// <summary>
-        /// Registers type <typeparamref name="TInstance"/> for constructor dependency injection
+        /// Registers type <typeparamref name="TInstance"/> for constructor or factory dependency injection
         /// with <see cref="Lifestyle.Transient"/> lifestyle.
         /// </summary>
         /// <remarks>
-        /// <typeparamref name="TInstance"/> must have a single public constructor, and any parameter types of that
-        /// constructor must registered with <paramref name="servant"/> before calling <see cref="Servant.ServeAsync{T}"/>.
+        /// <typeparamref name="TInstance"/> must either have:
+        /// <list type="bullet">
+        ///   <item>a single public constructor, or</item>
+        ///   <item>a single static method (of any name) returning either <c>TInstance</c> or <c>Task&lt;TInstance&gt;</c>.</item>
+        /// </list>
+        /// Any any parameter types of the constructor/factory method must registered with <paramref name="servant"/>
+        /// before calling <see cref="Servant.ServeAsync{T}"/>.
         /// </remarks>
         /// <typeparam name="TInstance">The type to register with the servant.</typeparam>
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
@@ -65,12 +70,17 @@ namespace Servant
 
         /// <summary>
         /// Registers type <typeparamref name="TDeclared"/> to be resolved by sub-type
-        /// <typeparamref name="TInstance"/> which is instantiated via constructor dependency injection
+        /// <typeparamref name="TInstance"/> which is instantiated via constructor or factory dependency injection
         /// with <see cref="Lifestyle.Transient"/> lifestyle.
         /// </summary>
         /// <remarks>
-        /// <typeparamref name="TInstance"/> must have a single public constructor, and any parameter types of that
-        /// constructor must registered with <paramref name="servant"/> before calling <see cref="Servant.ServeAsync{T}"/>.
+        /// <typeparamref name="TInstance"/> must either have:
+        /// <list type="bullet">
+        ///   <item>a single public constructor, or</item>
+        ///   <item>a single static method (of any name) returning either <c>TInstance</c> or <c>Task&lt;TInstance&gt;</c>.</item>
+        /// </list>
+        /// Any any parameter types of the constructor/factory method must registered with <paramref name="servant"/>
+        /// before calling <see cref="Servant.ServeAsync{T}"/>.
         /// </remarks>
         /// <typeparam name="TDeclared">The type to register and later search by.</typeparam>
         /// <typeparam name="TInstance">The type to instantiate when providing an instance of <typeparamref name="TDeclared"/>.</typeparam>
@@ -127,14 +137,18 @@ namespace Servant
         #region AddSingleton
 
         /// <summary>
-        /// Registers type <typeparamref name="TInstance"/> as a <see cref="Lifestyle.Singleton"/> to be created via constructor injection.
+        /// Registers type <typeparamref name="TInstance"/> as a <see cref="Lifestyle.Singleton"/> to be created via constructor or factory dependency injection.
         /// </summary>
         /// <remarks>
         /// Instantiation occurs when first required, or when <see cref="Servant.CreateSingletonsAsync"/> is invoked.
         /// <para />
-        /// <typeparamref name="TInstance"/> must have a single public constructor, and any parameter types of that
-        /// constructor must registered with <paramref name="servant"/> before calling <see cref="Servant.ServeAsync{T}"/>
-        /// or <see cref="Servant.CreateSingletonsAsync"/>.
+        /// <typeparamref name="TInstance"/> must either have:
+        /// <list type="bullet">
+        ///   <item>a single public constructor, or</item>
+        ///   <item>a single static method (of any name) returning either <c>TInstance</c> or <c>Task&lt;TInstance&gt;</c>.</item>
+        /// </list>
+        /// Any any parameter types of the constructor/factory method must registered with <paramref name="servant"/>
+        /// before calling <see cref="Servant.ServeAsync{T}"/> or <see cref="Servant.CreateSingletonsAsync"/>.
         /// </remarks>
         /// <typeparam name="TInstance">The type to register.</typeparam>
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
@@ -153,13 +167,17 @@ namespace Servant
 
         /// <summary>
         /// Registers type <typeparamref name="TDeclared"/> to be resolved by sub-type
-        /// <typeparamref name="TInstance"/> which is instantiated via constructor dependency injection
+        /// <typeparamref name="TInstance"/> which is instantiated via constructor or factory dependency injection
         /// with <see cref="Lifestyle.Singleton"/> lifestyle.
         /// </summary>
         /// <remarks>
-        /// <typeparamref name="TInstance"/> must have a single public constructor, and any parameter types of that
-        /// constructor must registered with <paramref name="servant"/> before calling <see cref="Servant.ServeAsync{T}"/>
-        /// or <see cref="Servant.CreateSingletonsAsync"/>.
+        /// <typeparamref name="TInstance"/> must either have:
+        /// <list type="bullet">
+        ///   <item>a single public constructor, or</item>
+        ///   <item>a single static method (of any name) returning either <c>TInstance</c> or <c>Task&lt;TInstance&gt;</c>.</item>
+        /// </list>
+        /// Any any parameter types of the constructor/factory method must registered with <paramref name="servant"/>
+        /// before calling <see cref="Servant.ServeAsync{T}"/> or <see cref="Servant.CreateSingletonsAsync"/>.
         /// </remarks>
         /// <typeparam name="TDeclared">The type to register and later search by.</typeparam>
         /// <typeparam name="TInstance">The type to instantiate when providing an instance of <typeparamref name="TDeclared"/>.</typeparam>
