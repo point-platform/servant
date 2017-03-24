@@ -90,8 +90,7 @@ namespace Servant
             {
                 _singletonInstance = instance;
 
-                var disposable = instance as IDisposable;
-                if (disposable != null)
+                if (instance is IDisposable disposable)
                     _servant.PushDisposableSingleton(disposable);
             }
 
