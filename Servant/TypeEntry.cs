@@ -33,9 +33,6 @@ namespace Servant
 
         [CanBeNull] public TypeProvider Provider { get; set; }
 
-        public TypeEntry(Type declaredType)
-        {
-            DeclaredType = declaredType;
-        }
+        public TypeEntry(Type declaredType) => DeclaredType = declaredType;
     }
 }
