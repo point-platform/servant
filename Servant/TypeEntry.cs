@@ -34,5 +34,7 @@ namespace Servant
         [CanBeNull] public TypeProvider Provider { get; set; }
 
         public TypeEntry(Type declaredType) => DeclaredType = declaredType;
+
+        public override string ToString() => $"{DeclaredType}{(Provider == null ? "(no provider)" : $"{Provider.Dependencies.Count} dependencies")}";
     }
 }
