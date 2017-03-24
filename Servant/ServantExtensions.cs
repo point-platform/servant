@@ -57,9 +57,10 @@ namespace Servant
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
         public static void AddTransient<[MeansImplicitUse] TInstance>(this Servant servant)
         {
-            Type[] parameterTypes;
-            Func<object[], Task<object>> func;
-            GetConstructionFunc(typeof(TInstance), out parameterTypes, out func);
+            GetConstructionFunc(
+                typeof(TInstance),
+                out Type[] parameterTypes,
+                out Func<object[], Task<object>> func);
 
             servant.Add(
                 Lifestyle.Transient,
@@ -87,9 +88,7 @@ namespace Servant
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
         public static void AddTransient<TDeclared, [MeansImplicitUse] TInstance>(this Servant servant) where TInstance : TDeclared
         {
-            Type[] parameterTypes;
-            Func<object[], Task<object>> func;
-            GetConstructionFunc(typeof(TInstance), out parameterTypes, out func);
+            GetConstructionFunc(typeof(TInstance), out Type[] parameterTypes, out Func<object[], Task<object>> func);
 
             servant.Add(
                 Lifestyle.Transient,
@@ -154,9 +153,7 @@ namespace Servant
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
         public static void AddSingleton<[MeansImplicitUse] TInstance>(this Servant servant)
         {
-            Type[] parameterTypes;
-            Func<object[], Task<object>> func;
-            GetConstructionFunc(typeof(TInstance), out parameterTypes, out func);
+            GetConstructionFunc(typeof(TInstance), out Type[] parameterTypes, out Func<object[], Task<object>> func);
 
             servant.Add(
                 Lifestyle.Singleton,
@@ -184,9 +181,7 @@ namespace Servant
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
         public static void AddSingleton<TDeclared, [MeansImplicitUse] TInstance>(this Servant servant) where TInstance : TDeclared
         {
-            Type[] parameterTypes;
-            Func<object[], Task<object>> func;
-            GetConstructionFunc(typeof(TInstance), out parameterTypes, out func);
+            GetConstructionFunc(typeof(TInstance), out Type[] parameterTypes, out Func<object[], Task<object>> func);
 
             servant.Add(
                 Lifestyle.Singleton,

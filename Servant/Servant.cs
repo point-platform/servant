@@ -71,8 +71,7 @@ namespace Servant
             // Validate we won't end up creating a cycle
             foreach (var parameterType in parameterTypes)
             {
-                TypeEntry parameterTypeEntry;
-                if (!_entryByType.TryGetValue(parameterType, out parameterTypeEntry))
+                if (!_entryByType.TryGetValue(parameterType, out TypeEntry parameterTypeEntry))
                     continue;
 
                 // Creates a cycle if one of parameterTypes depends upon declaredType
@@ -136,8 +135,7 @@ namespace Servant
             if (_disposed != 0)
                 throw new ObjectDisposedException(nameof(Servant));
 
-            TypeEntry entry;
-            if (!_entryByType.TryGetValue(typeof(T), out entry) || entry.Provider == null)
+            if (!_entryByType.TryGetValue(typeof(T), out TypeEntry entry) || entry.Provider == null)
                 throw new ServantException($"Type \"{typeof(T)}\" is not registered.");
 
             return TaskUtil.Upcast<T>(entry.Provider.GetAsync());
@@ -169,11 +167,7 @@ namespace Servant
         /// </remarks>
         /// <param name="type">The type to test for.</param>
         /// <returns><c>true</c> if the type has been registered, otherwise <c>false</c>.</returns>
-        public bool IsTypeRegistered(Type type)
-        {
-            TypeEntry entry;
-            return _entryByType.TryGetValue(type, out entry) && entry.Provider != null;
-        }
+        public bool IsTypeRegistered(Type type) => _entryByType.TryGetValue(type, out TypeEntry entry) && entry.Provider != null;
 
         /// <summary>
         /// Gets all types registered with this servant.
@@ -199,8 +193,7 @@ namespace Servant
                 return;
 
             // TODO catch exceptions and throw an aggregate?
-            IDisposable disposable;
-            while (_disposableSingletons.TryPop(out disposable))
+            while (_disposableSingletons.TryPop(out IDisposable disposable))
                 disposable.Dispose();
         }
     }
