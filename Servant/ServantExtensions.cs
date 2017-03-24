@@ -55,7 +55,7 @@ namespace Servant
         /// </remarks>
         /// <typeparam name="TInstance">The type to register with the servant.</typeparam>
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
-        public static void AddTransient<[MeansImplicitUse] TInstance>(this Servant servant)
+        public static void AddTransient<[MeansImplicitUse] TInstance>([NotNull] this Servant servant)
         {
             var (parameterTypes, func) = GetConstructionFunc(typeof(TInstance));
 
@@ -83,7 +83,7 @@ namespace Servant
         /// <typeparam name="TDeclared">The type to register and later search by.</typeparam>
         /// <typeparam name="TInstance">The type to instantiate when providing an instance of <typeparamref name="TDeclared"/>.</typeparam>
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
-        public static void AddTransient<TDeclared, [MeansImplicitUse] TInstance>(this Servant servant) where TInstance : TDeclared
+        public static void AddTransient<TDeclared, [MeansImplicitUse] TInstance>([NotNull] this Servant servant) where TInstance : TDeclared
         {
             var (parameterTypes, func) = GetConstructionFunc(typeof(TInstance));
 
@@ -102,7 +102,7 @@ namespace Servant
         /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
         /// <param name="func">A function that provides an instance of <typeparamref name="TInstance"/>.</param>
         [ExcludeFromCodeCoverage]
-        public static void AddTransient<TInstance>(this Servant servant, Func<TInstance> func)
+        public static void AddTransient<TInstance>([NotNull] this Servant servant, [NotNull] Func<TInstance> func)
         {
             servant.Add(
                 Lifestyle.Transient,
@@ -119,7 +119,7 @@ namespace Servant
         /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
         /// <param name="func">A function that asynchronously provides an instance of <typeparamref name="TInstance"/> via a <see cref="Task{TResult}"/>.</param>
         [ExcludeFromCodeCoverage]
-        public static void AddTransient<TInstance>(this Servant servant, Func<Task<TInstance>> func)
+        public static void AddTransient<TInstance>([NotNull] this Servant servant, [NotNull] Func<Task<TInstance>> func)
         {
             servant.Add(
                 Lifestyle.Transient,
@@ -148,7 +148,7 @@ namespace Servant
         /// </remarks>
         /// <typeparam name="TInstance">The type to register.</typeparam>
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
-        public static void AddSingleton<[MeansImplicitUse] TInstance>(this Servant servant)
+        public static void AddSingleton<[MeansImplicitUse] TInstance>([NotNull] this Servant servant)
         {
             var (parameterTypes, func) = GetConstructionFunc(typeof(TInstance));
 
@@ -176,7 +176,7 @@ namespace Servant
         /// <typeparam name="TDeclared">The type to register and later search by.</typeparam>
         /// <typeparam name="TInstance">The type to instantiate when providing an instance of <typeparamref name="TDeclared"/>.</typeparam>
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
-        public static void AddSingleton<TDeclared, [MeansImplicitUse] TInstance>(this Servant servant) where TInstance : TDeclared
+        public static void AddSingleton<TDeclared, [MeansImplicitUse] TInstance>([NotNull] this Servant servant) where TInstance : TDeclared
         {
             var (parameterTypes, func) = GetConstructionFunc(typeof(TInstance));
 
@@ -194,7 +194,7 @@ namespace Servant
         /// <typeparam name="TInstance">The declared type of the instance being added.</typeparam>
         /// <param name="servant">The instance of <see cref="Servant"/> to add the singleton instance to.</param>
         /// <param name="instance">The singleton instance to add for type <typeparamref name="TInstance"/>.</param>
-        public static void AddSingleton<TInstance>(this Servant servant, [NotNull] TInstance instance)
+        public static void AddSingleton<TInstance>([NotNull] this Servant servant, [NotNull] TInstance instance)
         {
             if (instance == null)
                 throw new ArgumentNullException(nameof(instance));
@@ -214,7 +214,7 @@ namespace Servant
         /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
         /// <param name="func">A function that provides the singleton instance of <typeparamref name="TInstance"/>.</param>
         [ExcludeFromCodeCoverage]
-        public static void AddSingleton<TInstance>(this Servant servant, Func<TInstance> func)
+        public static void AddSingleton<TInstance>([NotNull] this Servant servant, [NotNull] Func<TInstance> func)
         {
             servant.Add(
                 Lifestyle.Singleton,
@@ -231,7 +231,7 @@ namespace Servant
         /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
         /// <param name="func">A function that asynchronously provides the singleton instance of <typeparamref name="TInstance"/> via a <see cref="Task{TResult}"/>.</param>
         [ExcludeFromCodeCoverage]
-        public static void AddSingleton<TInstance>(this Servant servant, Func<Task<TInstance>> func)
+        public static void AddSingleton<TInstance>([NotNull] this Servant servant, [NotNull] Func<Task<TInstance>> func)
         {
             servant.Add(
                 Lifestyle.Singleton,

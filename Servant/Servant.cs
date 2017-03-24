@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using JetBrains.Annotations;
 
 namespace Servant
 {
@@ -54,7 +55,7 @@ namespace Servant
         /// <param name="declaredType">The <see cref="Type"/> via which instances must be requested.</param>
         /// <param name="factory">A function that returns an instance of <paramref name="declaredType"/> given a set of dependencies.</param>
         /// <param name="parameterTypes">The types of dependencies required by <paramref name="factory"/>.</param>
-        public void Add(Lifestyle lifestyle, Type declaredType, Func<object[], Task<object>> factory, Type[] parameterTypes)
+        public void Add(Lifestyle lifestyle, [NotNull] Type declaredType, [NotNull] Func<object[], Task<object>> factory, [NotNull, ItemNotNull] Type[] parameterTypes)
         {
             if (_disposed != 0)
                 throw new ObjectDisposedException(nameof(Servant));
