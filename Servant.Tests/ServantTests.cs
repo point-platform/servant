@@ -42,7 +42,7 @@ namespace Servant.Tests
     [ExcludeFromCodeCoverage]
     public class Test1 { }
 
-	[ExcludeFromCodeCoverage]
+    [ExcludeFromCodeCoverage]
     public class Test2
     {
         public Test1 Test1 { get; }
@@ -585,14 +585,14 @@ namespace Servant.Tests
             public Cycle1(Cycle2 c) { }
         }
 
-		[ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage]
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private class Cycle2
         {
             public Cycle2(Cycle3 c) { }
         }
 
-		[ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage]
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private class Cycle3
         {
