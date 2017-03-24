@@ -15,7 +15,7 @@
       A simple dependency injection framework with full support for C# async/await.
     </description>
 <!--<releaseNotes>Summary of changes made in this release of the package.</releaseNotes>-->
-    <copyright>Copyright Drew Noakes 2016</copyright>
+    <copyright>Copyright Drew Noakes 2016-2017</copyright>
     <tags>dependency-injection async-await async dependency injection container servant</tags>
   </metadata>
   <files>

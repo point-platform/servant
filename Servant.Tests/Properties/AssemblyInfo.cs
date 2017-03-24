@@ -2,7 +2,7 @@
 //
 // Servant
 //
-// Copyright 2016 Drew Noakes
+// Copyright 2016-2017 Drew Noakes
 //
 //    Licensed under the Apache License, Version 2.0 (the "License");
 //    you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Servant.Tests")]
-[assembly: AssemblyCopyright("Copyright © Drew Noakes 2016")]
+[assembly: AssemblyCopyright("Copyright © Drew Noakes 2016-2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
