@@ -16,7 +16,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Resources\servant-logo-128px-min.png = Resources\servant-logo-128px-min.png
 		Resources\servant-logo-inkscape.svg = Resources\servant-logo-inkscape.svg
 		Resources\servant-logo.svg = Resources\servant-logo.svg
-		Servant.nuspec = Servant.nuspec
 	EndProjectSection
 EndProject
 Global

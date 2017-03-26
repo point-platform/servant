@@ -1,78 +1,51 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{15F44CD4-3B1F-46B7-8AAF-352E9BFADF86}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Servant</RootNamespace>
+    <Summary>Async .NET dependency injection, while you await!</Summary>
+    <Description>A simple dependency injection framework with full support for C# async/await.</Description>
+    <Copyright>Copyright Drew Noakes 2016-2017</Copyright>
+    <AssemblyTitle>Servant</AssemblyTitle>
+    <VersionPrefix>0.4.0</VersionPrefix>
+    <Authors>Drew Noakes</Authors>
+    <TargetFrameworks>net45</TargetFrameworks>
+    <DebugType>portable</DebugType>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <AssemblyName>Servant</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+    <PackageId>Servant</PackageId>
+    <PackageTags>dependency injection;async await;async;dependency injection container;servant</PackageTags>
+    <PackageIconUrl>https://raw.githubusercontent.com/drewnoakes/servant/master/Resources/servant-logo-128px.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/drewnoakes/servant</PackageProjectUrl>
+    <PackageLicenseUrl>https://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/drewnoakes/servant.git</RepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <IncludeSource>true</IncludeSource>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Servant.xml</DocumentationFile>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="JetBrains.Annotations, Version=10.4.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
-      <HintPath>..\packages\JetBrains.Annotations.10.4.0\lib\net\JetBrains.Annotations.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.3.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-    </Reference>
+    <PackageReference Include="JetBrains.Annotations" Version="10.4.0">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="System.ValueTuple" Version="4.3.0" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Lifestyle.cs" />
-    <Compile Include="Servant.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServantException.cs" />
-    <Compile Include="ServantExtensions.cs" />
-    <Compile Include="ServantExtensions.Generated.cs">
-      <AutoGen>True</AutoGen>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="ServantExtensions.Generated.cs">
       <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
       <DependentUpon>ServantExtensions.Generated.tt</DependentUpon>
     </Compile>
-    <Compile Include="TaskUtil.cs" />
-    <Compile Include="TypeEntry.cs" />
-    <Compile Include="TypeProvider.cs" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ServantExtensions.Generated.tt">
+    <None Update="ServantExtensions.Generated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>ServantExtensions.Generated.cs</LastGenOutput>
-    </Content>
+    </None>
   </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>
