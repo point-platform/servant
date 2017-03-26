@@ -8,7 +8,7 @@
     <owners>Drew Noakes</owners>
     <licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
     <projectUrl>https://github.com/drewnoakes/servant</projectUrl>
-<!--<iconUrl>https://raw.githubusercontent.com/drewnoakes/servant/master/Resources/logo-128x128.png</iconUrl>-->
+    <iconUrl>https://raw.githubusercontent.com/drewnoakes/servant/master/Resources/servant-logo-128px.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>Async .NET dependency injection, while you await!</summary>
     <description>
