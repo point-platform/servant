@@ -30,7 +30,6 @@
 
 using System;
 using System.Threading.Tasks;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Servant
 {
@@ -60,7 +59,6 @@ for (var count = 1; count <= 16; count++)
         /// <typeparam name="TInstance">The type to register.</typeparam>
         /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
         /// <param name="func">A function that provides an instance of <typeparamref name="TInstance"/> when passed <#= depCount #>.</param>
-        [ExcludeFromCodeCoverage]
         public static void AddTransient<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, TInstance> func)
         {
             servant.Add(
@@ -80,7 +78,6 @@ for (var count = 1; count <= 16; count++)
 <# } #>
         /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
         /// <param name="func">A function that asynchronously provides an instance of <typeparamref name="TInstance"/> via a <see cref="Task{TResult}"/> when passed <#= depCount #>.</param>
-        [ExcludeFromCodeCoverage]
         public static void AddTransient<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, Task<TInstance>> func)
         {
             servant.Add(
@@ -114,7 +111,6 @@ for (var count = 1; count <= 16; count++)
 <# } #>
         /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
         /// <param name="func">A function that provides the singleton instance of <typeparamref name="TInstance"/> when passed <#= depCount #>.</param>
-        [ExcludeFromCodeCoverage]
         public static void AddSingleton<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, TInstance> func)
         {
             servant.Add(
@@ -134,7 +130,6 @@ for (var count = 1; count <= 16; count++)
 <# } #>
         /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
         /// <param name="func">A function that asynchronously provides the singleton instance of <typeparamref name="TInstance"/> via a <see cref="Task{TResult}"/> when passed <#= depCount #>.</param>
-        [ExcludeFromCodeCoverage]
         public static void AddSingleton<<#= typeNames #>, TInstance>(this Servant servant, Func<<#= typeNames #>, Task<TInstance>> func)
         {
             servant.Add(

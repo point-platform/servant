@@ -101,7 +101,6 @@ namespace Servant
         /// <typeparam name="TInstance">The type to register.</typeparam>
         /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
         /// <param name="func">A function that provides an instance of <typeparamref name="TInstance"/>.</param>
-        [ExcludeFromCodeCoverage]
         public static void AddTransient<TInstance>([NotNull] this Servant servant, [NotNull] Func<TInstance> func)
         {
             servant.Add(
@@ -118,7 +117,6 @@ namespace Servant
         /// <typeparam name="TInstance">The type to register.</typeparam>
         /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
         /// <param name="func">A function that asynchronously provides an instance of <typeparamref name="TInstance"/> via a <see cref="Task{TResult}"/>.</param>
-        [ExcludeFromCodeCoverage]
         public static void AddTransient<TInstance>([NotNull] this Servant servant, [NotNull] Func<Task<TInstance>> func)
         {
             servant.Add(
@@ -213,7 +211,6 @@ namespace Servant
         /// <typeparam name="TInstance">The type to register.</typeparam>
         /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
         /// <param name="func">A function that provides the singleton instance of <typeparamref name="TInstance"/>.</param>
-        [ExcludeFromCodeCoverage]
         public static void AddSingleton<TInstance>([NotNull] this Servant servant, [NotNull] Func<TInstance> func)
         {
             servant.Add(
@@ -230,7 +227,6 @@ namespace Servant
         /// <typeparam name="TInstance">The type to register.</typeparam>
         /// <param name="servant">The <see cref="Servant"/> to register the type/function with.</param>
         /// <param name="func">A function that asynchronously provides the singleton instance of <typeparamref name="TInstance"/> via a <see cref="Task{TResult}"/>.</param>
-        [ExcludeFromCodeCoverage]
         public static void AddSingleton<TInstance>([NotNull] this Servant servant, [NotNull] Func<Task<TInstance>> func)
         {
             servant.Add(

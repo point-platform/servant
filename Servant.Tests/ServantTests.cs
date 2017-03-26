@@ -39,10 +39,8 @@ namespace Servant.Tests
     // TODO test factories throwing
     // TODO get with timeout
 
-    [ExcludeFromCodeCoverage]
     public class Test1 { }
 
-    [ExcludeFromCodeCoverage]
     public class Test2
     {
         public Test1 Test1 { get; }
@@ -186,7 +184,6 @@ namespace Servant.Tests
 
         #region Multiple constructors
 
-        [ExcludeFromCodeCoverage]
         [SuppressMessage("ReSharper", "UnusedMember.Local")]
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private class MultiCtor
@@ -212,7 +209,6 @@ namespace Servant.Tests
 
         #region No constructors
 
-        [ExcludeFromCodeCoverage]
         [SuppressMessage("ReSharper", "UnusedMember.Local")]
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private class NoCtor
@@ -318,7 +314,6 @@ namespace Servant.Tests
 
         #region Multiple factories
 
-        [ExcludeFromCodeCoverage]
         [SuppressMessage("ReSharper", "UnusedMember.Local")]
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private class MultiFactory
@@ -550,10 +545,8 @@ namespace Servant.Tests
 
         private interface IBase { }
 
-        [ExcludeFromCodeCoverage]
         private class Impl : IBase { }
 
-        [ExcludeFromCodeCoverage]
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private class ImplDependant { public ImplDependant(Impl impl) { } }
 
@@ -578,21 +571,18 @@ namespace Servant.Tests
 
         #region Cycles
 
-        [ExcludeFromCodeCoverage]
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private class Cycle1
         {
             public Cycle1(Cycle2 c) { }
         }
 
-        [ExcludeFromCodeCoverage]
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private class Cycle2
         {
             public Cycle2(Cycle3 c) { }
         }
 
-        [ExcludeFromCodeCoverage]
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private class Cycle3
         {
@@ -642,7 +632,6 @@ namespace Servant.Tests
 
         #region Disposal
 
-        [ExcludeFromCodeCoverage]
         private class Disposable : IDisposable
         {
             public static readonly List<Type> Disposals = new List<Type>();
@@ -719,7 +708,6 @@ namespace Servant.Tests
             servant.Dispose();
         }
 
-        [ExcludeFromCodeCoverage]
         [SuppressMessage("ReSharper", "UnusedParameter.Local")]
         private class DisposableDependant : IDisposable
         {
