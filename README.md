@@ -1,16 +1,19 @@
-﻿# Servant
+﻿<img src="https://cdn.rawgit.com/drewnoakes/servant/master/Resources/servant-logo.svg" width="180" />
+
+> **Servant** _/səːv(ə)nt/_  
+> _noun_  
+> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;One who waits on another
 
 Async .NET dependency injection, while you await!
 
 [![Build status](https://ci.appveyor.com/api/projects/status/ft0hgxx2tsn927gu?svg=true)](https://ci.appveyor.com/project/drewnoakes/servant)
 [![Servant NuGet version](https://img.shields.io/nuget/v/Servant.svg)](https://www.nuget.org/packages/Servant/)
 
-> **/səːv(ə)nt/**  
-> _noun_  
-> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;One who waits on another
+---
 
-There are many DI frameworks out there already, so why another? Most frameworks predate C#'s `async`/`await` capabilities,
-and are fundamentally incompatible with code that awaits during initialisation.
+Most existing frameworks predate C#'s `async`/`await` capabilities,
+and are fundamentally incompatible with types that have asynchronous initialisation code.
+
 Such code must be _"async all the way down"_, and that's exactly what Servant is.
 
 # Show me the code
@@ -30,7 +33,21 @@ servant.AddTransient<Config>(async (ServerProxy server) => await server.RequestC
 var config = await servant.ServeAsync<Config>();
 ```
 
-# Registering types
+# Platforms
+
+Servant targets `net45` and `netstandard1.3`, so you can use it pretty much anywhere that .NET runs.
+
+# Installation
+
+Install the package from [NuGet](https://www.nuget.org/packages/Servant/):
+
+> Install-Package Servant
+
+Or clone the repo and build your own version.
+
+## Usage
+
+## Registering types
 
 Each type registered with a `Servant` must be resolvable via one of the following means:
     
@@ -40,7 +57,7 @@ Each type registered with a `Servant` must be resolvable via one of the followin
 
 Types can be `class` or `struct`, and may be `public`, `internal`, or `private`.
 
-# Lifestyles
+## Lifestyles
 
 Types may be registered with one of two lifestyles:
     
@@ -50,7 +67,7 @@ Types may be registered with one of two lifestyles:
 Note that the servant tracks singleton instances, and if they implement `IDisposable` will dispose them when you call `Servant.Dispose`.
 Transient instances cannot be tracked by the servant, and their lifespans must be managed by their consumers.
 
-# Rules for implicit creation
+## Rules for implicit creation
 
 Types can be implicitly constructed via calls such as `AddSingleton<SomeType>()` so long as `SomeType` meets one of two criteria:
 
@@ -85,14 +102,6 @@ public class FactoryExample
 
 
 ```
-
-# Installation
-
-Install the package from [NuGet](https://www.nuget.org/packages/Servant/):
-
-> Install-Package Servant
-
-Or clone the repo and build your own version.
 
 # License
 
