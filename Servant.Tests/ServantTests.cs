@@ -617,6 +617,24 @@ namespace Servant.Tests
 
         #endregion
 
+        #region ToDotGraphString
+
+        [Fact]
+        public void ToDotGraphStringTest()
+        {
+            var servant = new Servant();
+
+            servant.AddSingleton<Test1>();
+            servant.AddSingleton<Test2>();
+
+            Assert.Equal(@"digraph servant {
+    ""Servant.Tests.Test1"" -> {  };
+    ""Servant.Tests.Test2"" -> { ""Servant.Tests.Test1"" };
+}", servant.ToDotGraphString());
+        }
+
+        #endregion
+
         #region Disposal
 
         [ExcludeFromCodeCoverage]

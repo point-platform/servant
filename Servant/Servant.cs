@@ -26,6 +26,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
@@ -185,6 +186,40 @@ namespace Servant
         {
             // We push disposable instances onto a stack and dispose them in reverse order
             _disposableSingletons.Push(disposableSingletonInstance);
+        }
+
+        /// <summary>
+        /// Produces a description of the directed graph of dependencies within this servant, in DOT syntax.
+        /// </summary>
+        /// <remarks>
+        /// DOT syntax is straightforward and easily graphed using online software.
+        /// <list type="bullet">
+        /// <item>https://en.wikipedia.org/wiki/DOT_(graph_description_language)</item>
+        /// <item>http://www.webgraphviz.com/</item>
+        /// </list>
+        /// </remarks>
+        /// <exception cref="ServantException">One or more types do not have a provider.</exception>
+        /// <returns>The directed dependency graph described in the DOT syntax.</returns>
+        public string ToDotGraphString()
+        {
+            if (_disposed != 0)
+                throw new ObjectDisposedException(nameof(Servant));
+
+            var dot = new StringBuilder();
+
+            dot.AppendLine("digraph servant {");
+
+            foreach (var entry in _entryByType.Values)
+            {
+                if (entry.Provider == null)
+                    throw new ServantException($"Type {entry.DeclaredType} does not have a provider.");
+
+                dot.AppendLine($"    \"{entry.DeclaredType}\" -> {{ {string.Join(" ", entry.Provider.Dependencies.Select(d => $"\"{d.DeclaredType}\""))} }};");
+            }
+
+            dot.Append("}");
+
+            return dot.ToString();
         }
 
         /// <inheritdoc />
