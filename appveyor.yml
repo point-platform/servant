@@ -1,0 +1,16 @@
+version: 0.0.{build}
+skip_tags: true
+image: Visual Studio 2017
+configuration:
+- Release
+- Debug
+before_build:
+  appveyor-retry nuget restore
+build:
+  parallel: true
+  verbosity: minimal
+test:
+  assemblies:
+    - Servant.Tests.dll
+test_script:
+  - dotnet test .\Servant.Tests\Servant.Tests.csproj --no-build
