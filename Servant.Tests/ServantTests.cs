@@ -627,10 +627,15 @@ namespace Servant.Tests
             servant.AddSingleton<Test1>();
             servant.AddSingleton<Test2>();
 
-            Assert.Equal(@"digraph servant {
-    ""Servant.Tests.Test1"" -> {  };
-    ""Servant.Tests.Test2"" -> { ""Servant.Tests.Test1"" };
-}", servant.ToDotGraphString());
+            var lines = new HashSet<string>
+            {
+                "digraph servant {",
+                "    \"Servant.Tests.Test1\" -> {  };",
+                "    \"Servant.Tests.Test2\" -> { \"Servant.Tests.Test1\" };",
+                "}"
+            };
+
+            Assert.True(lines.SetEquals(servant.ToDotGraphString().Split(new[] {'\r', '\n'}, StringSplitOptions.RemoveEmptyEntries)));
         }
 
         #endregion
