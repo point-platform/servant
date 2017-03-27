@@ -57,7 +57,10 @@ namespace Servant
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
         public static void AddTransient<[MeansImplicitUse] TInstance>([NotNull] this Servant servant)
         {
-            var (parameterTypes, func) = GetConstructionFunc(typeof(TInstance));
+            GetConstructionFunc(
+                typeof(TInstance),
+                out Type[] parameterTypes,
+                out Func<object[], Task<object>> func);
 
             servant.Add(
                 Lifestyle.Transient,
@@ -85,7 +88,7 @@ namespace Servant
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
         public static void AddTransient<TDeclared, [MeansImplicitUse] TInstance>([NotNull] this Servant servant) where TInstance : TDeclared
         {
-            var (parameterTypes, func) = GetConstructionFunc(typeof(TInstance));
+            GetConstructionFunc(typeof(TInstance), out Type[] parameterTypes, out Func<object[], Task<object>> func);
 
             servant.Add(
                 Lifestyle.Transient,
@@ -148,7 +151,7 @@ namespace Servant
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
         public static void AddSingleton<[MeansImplicitUse] TInstance>([NotNull] this Servant servant)
         {
-            var (parameterTypes, func) = GetConstructionFunc(typeof(TInstance));
+            GetConstructionFunc(typeof(TInstance), out Type[] parameterTypes, out Func<object[], Task<object>> func);
 
             servant.Add(
                 Lifestyle.Singleton,
@@ -176,7 +179,7 @@ namespace Servant
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
         public static void AddSingleton<TDeclared, [MeansImplicitUse] TInstance>([NotNull] this Servant servant) where TInstance : TDeclared
         {
-            var (parameterTypes, func) = GetConstructionFunc(typeof(TInstance));
+            GetConstructionFunc(typeof(TInstance), out Type[] parameterTypes, out Func<object[], Task<object>> func);
 
             servant.Add(
                 Lifestyle.Singleton,
@@ -238,7 +241,7 @@ namespace Servant
 
         #endregion
 
-        private static (Type[] parameterTypes, Func<object[], Task<object>> func) GetConstructionFunc(Type type)
+        private static void GetConstructionFunc(Type type, out Type[] parameterTypes, out Func<object[], Task<object>> func)
         {
             var constructors = type.GetConstructors();
 
@@ -269,7 +272,7 @@ namespace Servant
                 ? constructors[0].GetParameters()
                 : factoryMethods[0].GetParameters();
 
-            var parameterTypes = parameterInfos.Select(p => p.ParameterType).ToArray();
+            parameterTypes = parameterInfos.Select(p => p.ParameterType).ToArray();
 
             // Read parameter values from the array argument, and cast them to the required types
             for (var i = 0; i < parameterTypes.Length; i++)
@@ -319,9 +322,7 @@ namespace Servant
 
             ilg.Emit(OpCodes.Ret);
 
-            var func = (Func<object[], Task<object>>)dynamicMethod.CreateDelegate(typeof(Func<object[], Task<object>>));
-
-            return (parameterTypes, func);
+            func = (Func<object[], Task<object>>)dynamicMethod.CreateDelegate(typeof(Func<object[], Task<object>>));
         }
     }
 }
