@@ -25,9 +25,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using JetBrains.Annotations;
+#if NETSTANDARD1_3
+using System.Reflection;
+#endif
 
 namespace Servant
 {
