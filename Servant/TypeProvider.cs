@@ -57,47 +57,58 @@ namespace Servant
         {
             // TODO make concurrency-safe here to avoid double-allocation of singleton
 
-            if (Lifestyle == Lifestyle.Singleton && _singletonInstance != null)
-                return _singletonInstance;
-
-            // find arguments
-            var argumentTasks = new List<Task<object>>();
-            foreach (var dep in Dependencies)
+            async Task<object> CreateAsync()
             {
-                if (dep.Provider == null)
+                // find arguments
+                var argumentTasks = new List<Task<object>>();
+                foreach (var dep in Dependencies)
                 {
-                    // No provider exists for this dependency.
-                    var message = $"Type \"{_declaredType}\" depends upon unregistered type \"{dep.DeclaredType}\".";
+                    if (dep.Provider == null)
+                    {
+                        // No provider exists for this dependency.
+                        var message = $"Type \"{_declaredType}\" depends upon unregistered type \"{dep.DeclaredType}\".";
 
-                    // See whether we have a super-type of the requested type.
-                    var superTypes = _servant.GetRegisteredTypes().Where(type => type.IsAssignableFrom(dep.DeclaredType)).ToList();
-                    if (superTypes.Any())
-                        message += $" Did you mean to reference registered super type {string.Join(" or ", superTypes.Select(st => $"\"{st}\""))}?";
+                        // See whether we have a super-type of the requested type.
+                        var superTypes = _servant.GetRegisteredTypes().Where(type => type.IsAssignableFrom(dep.DeclaredType)).ToList();
+                        if (superTypes.Any())
+                            message += $" Did you mean to reference registered super type {string.Join(" or ", superTypes.Select(st => $"\"{st}\""))}?";
 
-                    throw new ServantException(message);
+                        throw new ServantException(message);
+                    }
+                    argumentTasks.Add(dep.Provider.GetAsync());
                 }
-                argumentTasks.Add(dep.Provider.GetAsync());
+
+                await Task.WhenAll(argumentTasks);
+
+                var instance = await _factory.Invoke(argumentTasks.Select(t => t.Result).ToArray());
+
+                if (instance == null)
+                    throw new ServantException($"Instance for type \"{_declaredType}\" cannot be null.");
+
+                if (!_declaredType.IsInstanceOfType(instance))
+                    throw new ServantException($"Instance produced for type \"{_declaredType}\" is not an instance of that type.");
+
+                return instance;
             }
-
-            await Task.WhenAll(argumentTasks);
-
-            var instance = await _factory.Invoke(argumentTasks.Select(t => t.Result).ToArray());
-
-            if (instance == null)
-                throw new ServantException($"Instance for type \"{_declaredType}\" cannot be null.");
-
-            if (!_declaredType.IsInstanceOfType(instance))
-                throw new ServantException($"Instance produced for type \"{_declaredType}\" is not an instance of that type.");
 
             if (Lifestyle == Lifestyle.Singleton)
             {
+                if (_singletonInstance != null)
+                    return _singletonInstance;
+
+                var instance = await CreateAsync();
+
                 _singletonInstance = instance;
 
                 if (instance is IDisposable disposable)
                     _servant.PushDisposableSingleton(disposable);
-            }
 
-            return instance;
+                return instance;
+            }
+            else
+            {
+                return await CreateAsync();
+            }
         }
     }
 }
