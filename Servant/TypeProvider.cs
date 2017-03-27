@@ -38,11 +38,12 @@ namespace Servant
         public Lifestyle Lifestyle { get; }
         public IReadOnlyList<TypeEntry> Dependencies { get; }
 
+        private readonly object _singletonLock = new object();
         private readonly Servant _servant;
         private readonly Func<object[], Task<object>> _factory;
         private readonly Type _declaredType;
 
-        [CanBeNull] private object _singletonInstance;
+        [CanBeNull] private Task<object> _singletonCreationTask;
 
         public TypeProvider(Servant servant, Func<object[], Task<object>> factory, Type declaredType, Lifestyle lifestyle, IReadOnlyList<TypeEntry> dependencies)
         {
@@ -55,8 +56,6 @@ namespace Servant
 
         public async Task<object> GetAsync()
         {
-            // TODO make concurrency-safe here to avoid double-allocation of singleton
-
             async Task<object> CreateAsync()
             {
                 // find arguments
@@ -91,24 +90,32 @@ namespace Servant
                 return instance;
             }
 
-            if (Lifestyle == Lifestyle.Singleton)
+            if (Lifestyle == Lifestyle.Transient)
+                return await CreateAsync();
+
+            // Singleton
+
+            if (_singletonCreationTask == null)
             {
-                if (_singletonInstance != null)
-                    return _singletonInstance;
+                var created = false;
+                lock (_singletonLock)
+                {
+                    if (_singletonCreationTask == null)
+                    {
+                        _singletonCreationTask = CreateAsync();
+                        created = true;
+                    }
+                }
 
-                var instance = await CreateAsync();
+                var singleton = await _singletonCreationTask;
 
-                _singletonInstance = instance;
-
-                if (instance is IDisposable disposable)
+                if (created && singleton is IDisposable disposable)
                     _servant.PushDisposableSingleton(disposable);
 
-                return instance;
+                return singleton;
             }
-            else
-            {
-                return await CreateAsync();
-            }
+
+            return await _singletonCreationTask;
         }
     }
 }
