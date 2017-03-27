@@ -29,6 +29,9 @@ using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Xunit;
 
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable MemberCanBePrivate.Global
+
 #pragma warning disable 1998
 
 namespace Servant.Tests
