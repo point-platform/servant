@@ -42,12 +42,63 @@ namespace Servant.Tests
     // TODO test factories throwing
     // TODO get with timeout
 
-    public class Test1 { }
+    public class Test1
+    {
+        public static int ConstructionCount;
+        public Test1() => ConstructionCount++;
+    }
 
     public class Test2
     {
+        public static int ConstructionCount;
         public Test1 Test1 { get; }
-        public Test2(Test1 test1) { Test1 = test1; }
+        public Test2(Test1 test1)
+        {
+            Test1 = test1 ?? throw new ArgumentNullException(nameof(test1));
+            ConstructionCount++;
+        }
+    }
+
+    public class Test3
+    {
+        public static int ConstructionCount;
+        public Test1 Test1 { get; }
+        public Test2 Test2 { get; }
+        public Test3(Test1 test1, Test2 test2)
+        {
+            Test1 = test1 ?? throw new ArgumentNullException(nameof(test1));
+            Test2 = test2 ?? throw new ArgumentNullException(nameof(test2));
+            ConstructionCount++;
+        }
+    }
+
+    public class Test4
+    {
+        public static int ConstructionCount;
+        public Test3 Test3 { get; }
+        public Test4(Test3 test3)
+        {
+            Test3 = test3 ?? throw new ArgumentNullException(nameof(test3));
+            ConstructionCount++;
+        }
+    }
+
+    public class Test5
+    {
+        public static int ConstructionCount;
+        public Test1 Test1 { get; }
+        public Test2 Test2 { get; }
+        public Test3 Test3 { get; }
+        public Test4 Test4 { get; }
+
+        public Test5(Test1 test1, Test2 test2, Test3 test3, Test4 test4)
+        {
+            Test1 = test1 ?? throw new ArgumentNullException(nameof(test3));
+            Test2 = test2 ?? throw new ArgumentNullException(nameof(test3));
+            Test3 = test3 ?? throw new ArgumentNullException(nameof(test3));
+            Test4 = test4 ?? throw new ArgumentNullException(nameof(test3));
+            ConstructionCount++;
+        }
     }
 
     public sealed class ServantTests
@@ -86,6 +137,8 @@ namespace Servant.Tests
                 callCount1++;
                 return test1;
             });
+
+            Assert.Equal(0, callCount1);
 
             Assert.Same(test1, await servant.ServeAsync<Test1>());
             Assert.Equal(1, callCount1);
@@ -480,7 +533,7 @@ namespace Servant.Tests
         }
 
         [Fact]
-        public async Task CreateSingletonsAsync()
+        public async Task CreateSingletonsAsync_NoDependencies()
         {
             var servant = new Servant();
 
@@ -500,6 +553,44 @@ namespace Servant.Tests
             await servant.ServeAsync<Test1>();
 
             Assert.Equal(1, callCount);
+        }
+
+        [Fact]
+        public async Task CreateSingletonsAsync_Dependencies()
+        {
+            var servant = new Servant();
+
+            var callCount1 = 0;
+            servant.AddSingleton(() =>
+            {
+                callCount1++;
+                return new Test1();
+            });
+
+            var callCount2 = 0;
+            servant.AddSingleton((Test1 t) =>
+            {
+                callCount2++;
+                return new Test2(t);
+            });
+
+            Assert.Equal(0, callCount1);
+            Assert.Equal(0, callCount2);
+
+            await servant.CreateSingletonsAsync();
+
+            Assert.Equal(1, callCount1);
+            Assert.Equal(1, callCount2);
+
+            await servant.ServeAsync<Test1>();
+
+            Assert.Equal(1, callCount1);
+            Assert.Equal(1, callCount2);
+
+            await servant.ServeAsync<Test2>();
+
+            Assert.Equal(1, callCount1);
+            Assert.Equal(1, callCount2);
         }
 
         [Fact]
@@ -543,6 +634,139 @@ namespace Servant.Tests
 
             Assert.Equal(new[] {typeof(IBase)}, servant.GetRegisteredTypes());
         }
+
+        #region Singleton shuffle test
+
+        [Fact]
+        [SuppressMessage("ReSharper", "AccessToModifiedClosure")]
+        public async Task SingletonsCreation_ShuffleTest()
+        {
+            void Reset()
+            {
+                Test1.ConstructionCount = 0;
+                Test2.ConstructionCount = 0;
+                Test3.ConstructionCount = 0;
+                Test4.ConstructionCount = 0;
+                Test5.ConstructionCount = 0;
+            }
+
+            async Task Test(params Action<Servant>[] actions)
+            {
+                foreach (var permutation in actions.Permute())
+                {
+                    Reset();
+
+                    var servant = new Servant();
+
+                    foreach (var registration in permutation)
+                        registration(servant);
+
+                    Assert.Equal(0, Test1.ConstructionCount);
+                    Assert.Equal(0, Test2.ConstructionCount);
+                    Assert.Equal(0, Test3.ConstructionCount);
+                    Assert.Equal(0, Test4.ConstructionCount);
+                    Assert.Equal(0, Test5.ConstructionCount);
+
+                    await servant.CreateSingletonsAsync();
+
+                    Assert.Equal(1, Test1.ConstructionCount);
+                    Assert.Equal(1, Test2.ConstructionCount);
+                    Assert.Equal(1, Test3.ConstructionCount);
+                    Assert.Equal(1, Test4.ConstructionCount);
+                    Assert.Equal(1, Test5.ConstructionCount);
+
+                    await servant.CreateSingletonsAsync();
+
+                    Assert.Equal(1, Test1.ConstructionCount);
+                    Assert.Equal(1, Test2.ConstructionCount);
+                    Assert.Equal(1, Test3.ConstructionCount);
+                    Assert.Equal(1, Test4.ConstructionCount);
+                    Assert.Equal(1, Test5.ConstructionCount);
+                }
+
+                foreach (var permutation in actions.Permute())
+                {
+                    Reset();
+
+                    var servant = new Servant();
+
+                    foreach (var registration in permutation)
+                        registration(servant);
+
+                    Assert.Equal(0, Test1.ConstructionCount);
+                    Assert.Equal(0, Test2.ConstructionCount);
+                    Assert.Equal(0, Test3.ConstructionCount);
+                    Assert.Equal(0, Test4.ConstructionCount);
+                    Assert.Equal(0, Test5.ConstructionCount);
+
+                    Assert.NotNull(await servant.ServeAsync<Test1>());
+
+                    Assert.Equal(1, Test1.ConstructionCount);
+                    Assert.Equal(0, Test2.ConstructionCount);
+                    Assert.Equal(0, Test3.ConstructionCount);
+                    Assert.Equal(0, Test4.ConstructionCount);
+                    Assert.Equal(0, Test5.ConstructionCount);
+
+                    Assert.NotNull(await servant.ServeAsync<Test2>());
+
+                    Assert.Equal(1, Test1.ConstructionCount);
+                    Assert.Equal(1, Test2.ConstructionCount);
+                    Assert.Equal(0, Test3.ConstructionCount);
+                    Assert.Equal(0, Test4.ConstructionCount);
+                    Assert.Equal(0, Test5.ConstructionCount);
+
+                    Assert.NotNull(await servant.ServeAsync<Test3>());
+
+                    Assert.Equal(1, Test1.ConstructionCount);
+                    Assert.Equal(1, Test2.ConstructionCount);
+                    Assert.Equal(1, Test3.ConstructionCount);
+                    Assert.Equal(0, Test4.ConstructionCount);
+                    Assert.Equal(0, Test5.ConstructionCount);
+
+                    Assert.NotNull(await servant.ServeAsync<Test4>());
+
+                    Assert.Equal(1, Test1.ConstructionCount);
+                    Assert.Equal(1, Test2.ConstructionCount);
+                    Assert.Equal(1, Test3.ConstructionCount);
+                    Assert.Equal(1, Test4.ConstructionCount);
+                    Assert.Equal(0, Test5.ConstructionCount);
+
+                    Assert.NotNull(await servant.ServeAsync<Test5>());
+
+                    Assert.Equal(1, Test1.ConstructionCount);
+                    Assert.Equal(1, Test2.ConstructionCount);
+                    Assert.Equal(1, Test3.ConstructionCount);
+                    Assert.Equal(1, Test4.ConstructionCount);
+                    Assert.Equal(1, Test5.ConstructionCount);
+                }
+            }
+
+            await Test(
+                s => s.AddSingleton<Test1>(),
+                s => s.AddSingleton<Test2>(),
+                s => s.AddSingleton<Test3>(),
+                s => s.AddSingleton<Test4>(),
+                s => s.AddSingleton<Test5>()
+            );
+
+            await Test(
+                s => s.AddSingleton(() => new Test1()),
+                s => s.AddSingleton((Test1 t) => new Test2(t)),
+                s => s.AddSingleton((Test1 t1, Test2 t2) => new Test3(t1, t2)),
+                s => s.AddSingleton((Test3 t3) => new Test4(t3)),
+                s => s.AddSingleton((Test1 t1, Test2 t2, Test3 t3, Test4 t4) => new Test5(t1, t2, t3, t4))
+            );
+
+            await Test(
+                s => s.AddSingleton(async () => { await Task.Yield(); return new Test1(); }),
+                s => s.AddSingleton(async (Test1 t) => { await Task.Yield(); return new Test2(t); }),
+                s => s.AddSingleton(async (Test1 t1, Test2 t2) => { await Task.Yield(); return new Test3(t1, t2); }),
+                s => s.AddSingleton(async (Test3 t3) => { await Task.Yield(); return new Test4(t3); }),
+                s => s.AddSingleton(async (Test1 t1, Test2 t2, Test3 t3, Test4 t4) => { await Task.Yield(); return new Test5(t1, t2, t3, t4); })
+            );
+        }
+
+        #endregion
 
         #region Differing instance/declared types
 
