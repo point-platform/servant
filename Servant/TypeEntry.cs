@@ -35,6 +35,11 @@ namespace Servant
 
         public TypeEntry(Type declaredType) => DeclaredType = declaredType;
 
-        public override string ToString() => $"{DeclaredType}{(Provider == null ? "(no provider)" : $"{Provider.Dependencies.Count} dependencies")}";
+        public override string ToString()
+        {
+            return Provider != null
+                ? $"{DeclaredType} ({Provider.Dependencies.Count} {(Provider.Dependencies.Count == 1 ? "dependency" : "dependencies")})"
+                : $"{DeclaredType} (no provider)";
+        }
     }
 }
