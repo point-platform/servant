@@ -61,6 +61,9 @@ namespace Servant
             if (_disposed != 0)
                 throw new ObjectDisposedException(nameof(Servant));
 
+            if (!Enum.IsDefined(typeof(Lifestyle), lifestyle))
+                throw new ArgumentOutOfRangeException(nameof(lifestyle), $"Value should be defined in the {nameof(Lifestyle)} enum.");
+
             // Validate the type doesn't depend upon itself
             if (parameterTypes.Contains(declaredType))
                 throw new ServantException($"Type \"{declaredType}\" depends upon its own type, which is disallowed.");
