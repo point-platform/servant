@@ -5,7 +5,7 @@
     <Description>A simple dependency injection framework with full support for C# async/await.</Description>
     <Copyright>Copyright Drew Noakes 2016-2017</Copyright>
     <AssemblyTitle>Servant</AssemblyTitle>
-    <VersionPrefix>0.3.1</VersionPrefix>
+    <VersionPrefix>0.3.2</VersionPrefix>
     <Authors>Drew Noakes</Authors>
     <TargetFrameworks>netstandard1.3;net45</TargetFrameworks>
     <DebugType>portable</DebugType>
