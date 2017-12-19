@@ -38,6 +38,8 @@ namespace Servant
     /// </summary>
     /// <remarks>
     /// Disposing this class will dispose any contained singleton instances that implement <see cref="IDisposable"/>.
+    /// Singletons are disposed in reverse order of their creation, respecting dependencies.
+    /// <para />
     /// Transient instances are not tracked by this class and must be disposed by their consumers.
     /// </remarks>
     public sealed class Servant : IDisposable
@@ -56,6 +58,11 @@ namespace Servant
         /// <param name="declaredType">The <see cref="Type"/> via which instances must be requested.</param>
         /// <param name="factory">A function that returns an instance of <paramref name="declaredType"/> given a set of dependencies.</param>
         /// <param name="parameterTypes">The types of dependencies required by <paramref name="factory"/>.</param>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+        /// <exception cref="ServantException"><paramref name="declaredType"/> depends upon its own type, which is not allowed.</exception>
+        /// <exception cref="ServantException"><paramref name="declaredType"/> declares multiple parameters of the same type.</exception>
+        /// <exception cref="ServantException">Adding <paramref name="declaredType"/> would create a cyclic dependency.</exception>
+        /// <exception cref="ServantException"><paramref name="declaredType"/> is already registered.</exception>
         public void Add(Lifestyle lifestyle, [NotNull] Type declaredType, [NotNull] Func<object[], Task<object>> factory, [NotNull, ItemNotNull] Type[] parameterTypes)
         {
             if (_disposed != 0)
@@ -118,6 +125,7 @@ namespace Servant
         /// If all singletons are already instantiated, calling this method has no effect.
         /// </remarks>
         /// <returns>A task that completes when singleton initialisation has finished.</returns>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task CreateSingletonsAsync()
         {
             if (_disposed != 0)
@@ -135,6 +143,8 @@ namespace Servant
         /// </summary>
         /// <typeparam name="T">The type to be served.</typeparam>
         /// <returns>A task that completes when the instance is ready.</returns>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
+        /// <exception cref="ServantException">The requested type <typeparamref name="T"/> has not been registered.</exception>
         public Task<T> ServeAsync<T>()
         {
             if (_disposed != 0)
@@ -178,6 +188,7 @@ namespace Servant
         /// Gets all types registered with this servant.
         /// </summary>
         /// <returns>An enumeration of registered types.</returns>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public IEnumerable<Type> GetRegisteredTypes()
         {
             if (_disposed != 0)
@@ -204,6 +215,7 @@ namespace Servant
         /// <item>http://www.webgraphviz.com/</item>
         /// </list>
         /// </remarks>
+        /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         /// <exception cref="ServantException">One or more types do not have a provider.</exception>
         /// <returns>The directed dependency graph described in the DOT syntax.</returns>
         public string ToDotGraphString()
