@@ -180,6 +180,9 @@ namespace Servant
         /// <returns>An enumeration of registered types.</returns>
         public IEnumerable<Type> GetRegisteredTypes()
         {
+            if (_disposed != 0)
+                throw new ObjectDisposedException(nameof(Servant));
+
             return from entry in _entryByType.Values
                    where entry.Provider != null
                    select entry.DeclaredType;
