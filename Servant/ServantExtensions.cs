@@ -50,11 +50,12 @@ namespace Servant
         ///   <item>a single public constructor, or</item>
         ///   <item>a single static method (of any name) returning either <c>TInstance</c> or <c>Task&lt;TInstance&gt;</c>.</item>
         /// </list>
-        /// Any any parameter types of the constructor/factory method must registered with <paramref name="servant"/>
+        /// Any parameter types of the constructor/factory method must registered with <paramref name="servant"/>
         /// before calling <see cref="Servant.ServeAsync{T}"/>.
         /// </remarks>
         /// <typeparam name="TInstance">The type to register with the servant.</typeparam>
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
+        /// <exception cref="ServantException">Type <typeparamref name="TInstance"/> does not have a single public constructor XOR a single public static factory method returning either  <c>TInstance</c> or <c>Task&lt;TInstance&gt;</c>.</exception>
         public static void AddTransient<[MeansImplicitUse] TInstance>([NotNull] this Servant servant)
         {
             GetConstructionFunc(
@@ -80,12 +81,13 @@ namespace Servant
         ///   <item>a single public constructor, or</item>
         ///   <item>a single static method (of any name) returning either <c>TInstance</c> or <c>Task&lt;TInstance&gt;</c>.</item>
         /// </list>
-        /// Any any parameter types of the constructor/factory method must registered with <paramref name="servant"/>
+        /// Any parameter types of the constructor/factory method must registered with <paramref name="servant"/>
         /// before calling <see cref="Servant.ServeAsync{T}"/>.
         /// </remarks>
         /// <typeparam name="TDeclared">The type to register and later search by.</typeparam>
         /// <typeparam name="TInstance">The type to instantiate when providing an instance of <typeparamref name="TDeclared"/>.</typeparam>
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
+        /// <exception cref="ServantException">Type <typeparamref name="TInstance"/> does not have a single public constructor XOR a single public static factory method returning either  <c>TInstance</c> or <c>Task&lt;TInstance&gt;</c>.</exception>
         public static void AddTransient<TDeclared, [MeansImplicitUse] TInstance>([NotNull] this Servant servant) where TInstance : TDeclared
         {
             GetConstructionFunc(typeof(TInstance), out Type[] parameterTypes, out Func<object[], Task<object>> func);
@@ -144,11 +146,12 @@ namespace Servant
         ///   <item>a single public constructor, or</item>
         ///   <item>a single static method (of any name) returning either <c>TInstance</c> or <c>Task&lt;TInstance&gt;</c>.</item>
         /// </list>
-        /// Any any parameter types of the constructor/factory method must registered with <paramref name="servant"/>
+        /// Any parameter types of the constructor/factory method must registered with <paramref name="servant"/>
         /// before calling <see cref="Servant.ServeAsync{T}"/> or <see cref="Servant.CreateSingletonsAsync"/>.
         /// </remarks>
         /// <typeparam name="TInstance">The type to register.</typeparam>
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
+        /// <exception cref="ServantException">Type <typeparamref name="TInstance"/> does not have a single public constructor XOR a single public static factory method returning either  <c>TInstance</c> or <c>Task&lt;TInstance&gt;</c>.</exception>
         public static void AddSingleton<[MeansImplicitUse] TInstance>([NotNull] this Servant servant)
         {
             GetConstructionFunc(typeof(TInstance), out Type[] parameterTypes, out Func<object[], Task<object>> func);
@@ -171,12 +174,13 @@ namespace Servant
         ///   <item>a single public constructor, or</item>
         ///   <item>a single static method (of any name) returning either <c>TInstance</c> or <c>Task&lt;TInstance&gt;</c>.</item>
         /// </list>
-        /// Any any parameter types of the constructor/factory method must registered with <paramref name="servant"/>
+        /// Any parameter types of the constructor/factory method must registered with <paramref name="servant"/>
         /// before calling <see cref="Servant.ServeAsync{T}"/> or <see cref="Servant.CreateSingletonsAsync"/>.
         /// </remarks>
         /// <typeparam name="TDeclared">The type to register and later search by.</typeparam>
         /// <typeparam name="TInstance">The type to instantiate when providing an instance of <typeparamref name="TDeclared"/>.</typeparam>
         /// <param name="servant">The <see cref="Servant"/> to register the type with.</param>
+        /// <exception cref="ServantException">Type <typeparamref name="TInstance"/> does not have a single public constructor XOR a single public static factory method returning either  <c>TInstance</c> or <c>Task&lt;TInstance&gt;</c>.</exception>
         public static void AddSingleton<TDeclared, [MeansImplicitUse] TInstance>([NotNull] this Servant servant) where TInstance : TDeclared
         {
             GetConstructionFunc(typeof(TInstance), out Type[] parameterTypes, out Func<object[], Task<object>> func);
@@ -241,6 +245,13 @@ namespace Servant
 
         #endregion
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="parameterTypes"></param>
+        /// <param name="func"></param>
+        /// <exception cref="ServantException">Type does not have a single public constructor XOR a single public static factory method returning <paramref name="type"/> or a Task-of-<paramref name="type"/>.</exception>
         private static void GetConstructionFunc(Type type, out Type[] parameterTypes, out Func<object[], Task<object>> func)
         {
             var constructors = type.GetConstructors();
