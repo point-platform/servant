@@ -65,8 +65,7 @@ namespace Servant
         /// <exception cref="ServantException"><paramref name="declaredType"/> is already registered.</exception>
         public void Add(Lifestyle lifestyle, [NotNull] Type declaredType, [NotNull] Func<object[], Task<object>> factory, [NotNull, ItemNotNull] Type[] parameterTypes)
         {
-            if (_disposed != 0)
-                throw new ObjectDisposedException(nameof(Servant));
+            EnsureNotDisposed();
 
             if (!Enum.IsDefined(typeof(Lifestyle), lifestyle))
                 throw new ArgumentOutOfRangeException(nameof(lifestyle), $"Value should be defined in the {nameof(Lifestyle)} enum.");
@@ -128,8 +127,7 @@ namespace Servant
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public Task CreateSingletonsAsync()
         {
-            if (_disposed != 0)
-                throw new ObjectDisposedException(nameof(Servant));
+            EnsureNotDisposed();
 
             return Task.WhenAll(
                 from typeEntry in _entryByType.Values
@@ -147,8 +145,7 @@ namespace Servant
         /// <exception cref="ServantException">The requested type <typeparamref name="T"/> has not been registered.</exception>
         public Task<T> ServeAsync<T>()
         {
-            if (_disposed != 0)
-                throw new ObjectDisposedException(nameof(Servant));
+            EnsureNotDisposed();
 
             if (!_entryByType.TryGetValue(typeof(T), out TypeEntry entry) || entry.Provider == null)
                 throw new ServantException($"Type \"{typeof(T)}\" is not registered.");
@@ -191,8 +188,7 @@ namespace Servant
         /// <exception cref="ObjectDisposedException">This object has been disposed.</exception>
         public IEnumerable<Type> GetRegisteredTypes()
         {
-            if (_disposed != 0)
-                throw new ObjectDisposedException(nameof(Servant));
+            EnsureNotDisposed();
 
             return from entry in _entryByType.Values
                    where entry.Provider != null
@@ -220,8 +216,7 @@ namespace Servant
         /// <returns>The directed dependency graph described in the DOT syntax.</returns>
         public string ToDotGraphString()
         {
-            if (_disposed != 0)
-                throw new ObjectDisposedException(nameof(Servant));
+            EnsureNotDisposed();
 
             var dot = new StringBuilder();
 
@@ -249,6 +244,12 @@ namespace Servant
             // TODO catch exceptions and throw an aggregate?
             while (_disposableSingletons.TryPop(out IDisposable disposable))
                 disposable.Dispose();
+        }
+
+        private void EnsureNotDisposed()
+        {
+            if (_disposed != 0)
+                throw new ObjectDisposedException(nameof(Servant));
         }
     }
 }
