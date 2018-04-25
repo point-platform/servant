@@ -98,6 +98,31 @@ namespace Servant
             typeEntry.Provider = new TypeProvider(this, factory, declaredType, lifestyle, parameterTypes.Select(GetOrAddTypeEntry).ToList());
         }
 
+        /// <summary>
+        /// Specifies that an already registered singleton can be served via another of its interfaces or base classes.
+        /// </summary>
+        /// <remarks>
+        /// A singleton many have as many aliases as it has interfaces or base classes.
+        /// <para />
+        /// Aliasing a singleton does not effect disposal behaviour when the container is disposed.
+        /// </remarks>
+        /// <typeparam name="TAlias">The new interface or base class via which the singleton can be served.</typeparam>
+        /// <typeparam name="TDeclared">The type under which the singleton is already registered.</typeparam>
+        /// <exception cref="ServantException"><typeparamref name="TDeclared"/> has not yet been registered with the container.</exception>
+        /// <exception cref="ServantException"><typeparamref name="TAlias"/> has already been registered with the container.</exception>
+        public void AliasSingleton<TAlias, TDeclared>() where TDeclared : TAlias
+        {
+            if (!_entryByType.TryGetValue(typeof(TDeclared), out var declaredEntry) || declaredEntry.Provider == null)
+                throw new ServantException($"Declared type {typeof(TDeclared)} not yet registered.");
+
+            var aliasEntry = GetOrAddTypeEntry(typeof(TAlias));
+
+            if (aliasEntry.Provider != null)
+                throw new ServantException($"Alias type \"{typeof(TAlias)}\" already registered.");
+
+            aliasEntry.Provider = declaredEntry.Provider;
+        }
+
         private static bool DependsUpon(TypeEntry dependant, Type dependent)
         {
             if (dependant.Provider == null)
@@ -197,6 +222,8 @@ namespace Servant
 
         internal void PushDisposableSingleton(IDisposable disposableSingletonInstance)
         {
+            EnsureNotDisposed();
+
             // We push disposable instances onto a stack and dispose them in reverse order
             _disposableSingletons.Push(disposableSingletonInstance);
         }
