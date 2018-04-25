@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Summary>Async .NET dependency injection, while you await!</Summary>
     <Description>A simple dependency injection framework with full support for C# async/await.</Description>
-    <Copyright>Copyright Drew Noakes 2016-2017</Copyright>
+    <Copyright>Copyright Drew Noakes 2016-2018</Copyright>
     <AssemblyTitle>Servant</AssemblyTitle>
     <VersionPrefix>0.3.3</VersionPrefix>
     <Authors>Drew Noakes</Authors>
