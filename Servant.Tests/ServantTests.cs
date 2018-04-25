@@ -635,6 +635,61 @@ namespace Servant.Tests
             Assert.Equal(new[] {typeof(IBase)}, servant.GetRegisteredTypes());
         }
 
+        #region Singleton Alias
+
+        private interface IAlias {}
+        private interface ISingleton : IAlias {}
+
+        private sealed class AliasableSingleton : ISingleton, IDisposable
+        {
+            public int DisposeCount { get; private set; }
+            public void Dispose() => DisposeCount++;
+        }
+
+        [Fact]
+        public async Task AliasSingleton()
+        {
+            var servant = new Servant();
+
+            servant.AddSingleton<ISingleton, AliasableSingleton>();
+            servant.AliasSingleton<IAlias, ISingleton>();
+
+            Assert.True(servant.IsTypeRegistered<ISingleton>());
+            Assert.True(servant.IsTypeRegistered<IAlias>());
+            Assert.False(servant.IsTypeRegistered<AliasableSingleton>());
+
+            var singleton = await servant.ServeAsync<ISingleton>();
+
+            Assert.Same(
+                singleton,
+                await servant.ServeAsync<IAlias>());
+
+            servant.Dispose();
+
+            Assert.Equal(1, ((AliasableSingleton)singleton).DisposeCount);
+        }
+
+        [Fact]
+        public void AliasSingleton_ThrowsIfAliasTypeAlreadyRegistered()
+        {
+            var servant = new Servant();
+
+            servant.AddSingleton<ISingleton, AliasableSingleton>();
+            servant.AddSingleton<IAlias, AliasableSingleton>();
+
+            Assert.Throws<ServantException>(() => servant.AliasSingleton<IAlias, ISingleton>());
+        }
+
+        [Fact]
+        public void AliasSingleton_ThrowsIfDeclaredTypeNotYetRegistered()
+        {
+            var servant = new Servant();
+
+            Assert.Throws<ServantException>(() => servant.AliasSingleton<IAlias, ISingleton>());
+        }
+
+        #endregion
+
         #region Singleton shuffle test
 
         [Fact]
